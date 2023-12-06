@@ -1,0 +1,17 @@
+.Polaris-ShadowBevel {
+  --pc-shadow-bevel-content-xs: none!important;
+  box-shadow: rgba(0, 27, 71, 0.08) 0px 3px 7px!important;
+}
+
+.Polaris-HorizontalStack {
+  --pc-horizontal-stack-block-align: center!important;
+}
+
+.Polaris-Header-Title {
+  font-size: 25px!important;
+  font-weight: 500!important;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+  color: #353535;
+}
