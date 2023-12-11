@@ -103,3 +103,22 @@ export default function Home() {
     </Page>
   );
 }
+
+export async function getServerSideProps(context) {
+  const { req } = context;
+  const jwt = req.cookies.jwtToken;
+  const domain = req.cookies['shop'];
+
+  if (!jwt) {
+    console.log('run vao day')
+    res.writeHead(301, { Location: "/login.html" });
+    res.end();
+  }
+
+  return {
+    props: {
+      jwt,
+      domain,
+    }
+  }
+}

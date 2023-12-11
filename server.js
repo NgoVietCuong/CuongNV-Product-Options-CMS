@@ -4,8 +4,9 @@ const koa = require("koa");
 const axios = require("axios");
 const koaRouter = require("koa-router");
 const koaSession = require("koa-session");
-const { createShopifyAuth, verifyRequest } = require("simple-koa-shopify-auth");
-const { Shopify } = require("@shopify/shopify-api");
+const { default: createShopifyAuth } = require('@shopify/koa-shopify-auth');
+const { verifyRequest } = require('@shopify/koa-shopify-auth');
+const { default: Shopify } = require("@shopify/shopify-api");
 
 const {
   SHOPIFY_API_KEY,
@@ -30,7 +31,7 @@ Shopify.Context.initialize({
   SESSION_STORAGE: new Shopify.Session.MemorySessionStorage(),
 });
 
-const port = parseInt(APP_PORT) || 3001;
+const port = parseInt(APP_PORT) || 3000;
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
@@ -46,9 +47,7 @@ app.prepare().then(() => {
   server.use(
     createShopifyAuth({
       accessMode: "offline",
-      authRoute: "/install/auth",
       async afterAuth(ctx) {
-        console.log(ctx.state.shopify)
         const { shop, accessToken } = ctx.state.shopify;
         const jwtPayLoad = {
           shopDomain: shop,
@@ -68,52 +67,28 @@ app.prepare().then(() => {
 
         let shopAuthentication = true;
 
-        try {
-          const shopRes = await axios({
-            url: `${SERVER_URL}/shops`,
-            method: 'get',
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${jwtToken}`
-            }
-          });
+        // try {
+        //   const shopRes = await axios({
+        //     url: `${SERVER_URL}/shops`,
+        //     method: 'get',
+        //     headers: {
+        //       "Content-Type": "application/json",
+        //       "Authorization": `Bearer ${jwtToken}`
+        //     }
+        //   });
           
-          console.log(shopRes);
-          shopAuthentication = true;
-        } catch (error) {
-          console.log('error', error);
-        }
+        //   shopAuthentication = true;
+        // } catch (error) {
+        //   console.log('error', error);
+        // }
 
         if (shopAuthentication) {
           console.log("Shop authenticated successfully!");
           ctx.redirect("/");
-        } else {
-          console.log('2')
-          ctx.redirect("/login.html")
         }
       }
     })
   )
-
-  server.use(async (ctx, next) => {
-    console.log(ctx.state.shopify)
-    if (!ctx.state.shopify) {
-      // Redirect to the login page if not authenticated
-      // ctx.redirect('/login');
-      // return;
-      console.log('khong co');
-    } else {
-      console.log('co');
-    }
-
-    await next();
-  });
-
-  router.get('/login', async (ctx) => {
-    console.log('cuong yeu hoa')
-    await handle(ctx.req, ctx.res);
-    ctx.respond = false;
-  });
 
   const handleRequest = async (ctx) => {
     await handle(ctx.req, ctx.res);
@@ -123,10 +98,17 @@ app.prepare().then(() => {
 
   router.get("(/_next/static/.*)", handleRequest);
   router.get("/_next/webpack-hmr", handleRequest);
+  router.get("(/shared/.*)", handleRequest);
   router.get(
-      "(.*)",
-      verifyRequest({ accessMode: "offline", authRoute: "/auth"}),
-      handleRequest,
+    "(.*)",
+    async (ctx, next) => {
+      if (ctx.path.includes("/login.html") || ctx.path.includes("/static")) {
+        return await handleRequest(ctx);
+      }
+      await next();
+    },
+    verifyRequest({ accessMode: "offline", fallbackRoute: "/login.html" }),
+    handleRequest,
   );
 
   server.use(router.allowedMethods()).use(router.routes());
