@@ -7,6 +7,7 @@ const koaSession = require("koa-session");
 const { default: createShopifyAuth } = require('@shopify/koa-shopify-auth');
 const { verifyRequest } = require('@shopify/koa-shopify-auth');
 const { default: Shopify } = require("@shopify/shopify-api");
+const { Crete_Round } = require("next/font/google");
 
 const {
   SHOPIFY_API_KEY,
@@ -65,22 +66,66 @@ app.prepare().then(() => {
         ctx.cookies.set("accessToken", accessToken, { httpOnly: false, secure: true, sameSite: "none" });
         ctx.cookies.set("jwtToken", jwtToken, { httpOnly: false, secure: true, sameSite: "none" });
 
-        let shopAuthentication = true;
+        let shopAuthentication = false;
 
-        // try {
-        //   const shopRes = await axios({
-        //     url: `${SERVER_URL}/shops`,
-        //     method: 'get',
-        //     headers: {
-        //       "Content-Type": "application/json",
-        //       "Authorization": `Bearer ${jwtToken}`
-        //     }
-        //   });
+        try {
+          const shopRes = await axios({
+            url: `${SERVER_URL}/shops`,
+            method: "get",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${jwtToken}`
+            }
+          });
+          const shopData = shopRes.data;
+          console.log("shopData", shopData);
+
+          if (shopData && shopData.statusCode === 200) {
+            const updateShopRes = await axios({
+              url: `${SERVER_URL}/shops`,
+              method: "put",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${jwtToken}`
+              }
+            });
+            const updateShopData = updateShopRes.data;
+            console.log("updateData", updateShopData);
+
+            if (updateShopData && updateShopData.statusCode === 200) {
+              shopAuthentication = true;
+            }
+          } else {
+            const createShopRes = await axios({
+              url: `${SERVER_URL}/shops`,
+              method: "post",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${jwtToken}`
+              }
+            });
+            const createShopData = createShopRes.data;
+            console.log("createData", createShopData)
+
+            if (createShopData && createShopData.statusCode === 201) {
+              const createConfigRes = await axios({
+                url: `${SERVER_URL}/configs`,
+                method: "post",
+                headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${jwtToken}`
+                },
+                data: {
+                  shopId: createShopData.payload._id
+                }
+              });
+              shopAuthentication = true;
+            }
+          }
           
-        //   shopAuthentication = true;
-        // } catch (error) {
-        //   console.log('error', error);
-        // }
+        } catch (e) {
+          console.log('Error', e);
+        }
 
         if (shopAuthentication) {
           console.log("Shop authenticated successfully!");
