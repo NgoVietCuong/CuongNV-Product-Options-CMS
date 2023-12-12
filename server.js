@@ -7,7 +7,6 @@ const koaSession = require("koa-session");
 const { default: createShopifyAuth } = require('@shopify/koa-shopify-auth');
 const { verifyRequest } = require('@shopify/koa-shopify-auth');
 const { default: Shopify } = require("@shopify/shopify-api");
-const { Crete_Round } = require("next/font/google");
 
 const {
   SHOPIFY_API_KEY,
@@ -78,9 +77,10 @@ app.prepare().then(() => {
             }
           });
           const shopData = shopRes.data;
-          console.log("shopData", shopData);
 
           if (shopData && shopData.statusCode === 200) {
+            const shopId = shopData.payload._id;
+            ctx.cookies.set('shopId', shopId, { httpOnly: false, secure: true, sameSite: 'none' });
             const updateShopRes = await axios({
               url: `${SERVER_URL}/shops`,
               method: "put",
@@ -90,7 +90,6 @@ app.prepare().then(() => {
               }
             });
             const updateShopData = updateShopRes.data;
-            console.log("updateData", updateShopData);
 
             if (updateShopData && updateShopData.statusCode === 200) {
               shopAuthentication = true;
@@ -105,9 +104,10 @@ app.prepare().then(() => {
               }
             });
             const createShopData = createShopRes.data;
-            console.log("createData", createShopData)
 
             if (createShopData && createShopData.statusCode === 201) {
+              const shopId = createShopData.payload._id;
+              ctx.cookies.set('shopId', shopId, { httpOnly: false, secure: true, sameSite: 'none' });
               const createConfigRes = await axios({
                 url: `${SERVER_URL}/configs`,
                 method: "post",
@@ -116,13 +116,16 @@ app.prepare().then(() => {
                   "Authorization": `Bearer ${jwtToken}`
                 },
                 data: {
-                  shopId: createShopData.payload._id
+                  shopId: shopId
                 }
               });
-              shopAuthentication = true;
+              const createConfigData = createConfigRes.data;
+
+              if (createConfigData && createConfigData.statusCode === 201) {
+                shopAuthentication = true;
+              }
             }
-          }
-          
+          } 
         } catch (e) {
           console.log('Error', e);
         }
