@@ -5,40 +5,17 @@ import { IoIosListBox, IoMdPricetags, IoMdCart } from "react-icons/io";
 import styles from "../styles/Home.module.css";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { useState, useCallback, useEffect } from "react";
+import { useState } from "react";
 
-export default function Home({ jwt, shopId }) {
+export default function Home({ jwt, shopId, initialConfig }) {
   const router = useRouter();
-  const [appStatus, setAppStatus] = useState(false);
-  const [editInCart, setEditInCart] = useState(false);
-  const [priceAddOn, setPriceAddOn] = useState(false);
-  const [isFetching, setIsFetching] = useState(true);
-  const [updating, setUpdating] = useState(null);
+  const [configs, setConfigs] = useState(initialConfig);
 
-  const fetchConfigData = useCallback(async () => {
-    setIsFetching(true);
-    const configRes = await axios({
-      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/configs`,
-      method: "get",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${jwt}`
-      }
-    });
+  const handleConfigChange = async (configName) => {
+    const newConfigs = {...configs, [configName]: !configs[configName]}
+    setConfigs(newConfigs);
 
-    const configData = configRes.data;
-    if (configData && configData.statusCode === 200) {
-      setAppStatus(configData.payload.appStatus);
-      setEditInCart(configData.payload.editInCart);
-      setPriceAddOn(configData.payload.priceAddOn);
-    }
-
-    setIsFetching(false);
-  }, [jwt]);
-
-  const handleAppStatusChange = useCallback(async () => {
-    setUpdating("appStatus");
-    const configRes = await axios({
+    await axios({
       url: `${process.env.NEXT_PUBLIC_SERVER_URL}/configs`,
       method: "put",
       headers: {
@@ -47,70 +24,10 @@ export default function Home({ jwt, shopId }) {
       },
       data: {
         shopId: shopId,
-        appStatus: !appStatus
+        config: newConfigs
       }
     });
-
-    const configData = configRes.data;
-    if (configData && configData.statusCode === 200) {
-      setAppStatus(!appStatus);
-      setUpdating(null);
-    } else {
-      setUpdating('Error');
-    }
-  }, [appStatus]);
-
-  const handleEditInCartChange = useCallback(async () => {
-    setUpdating("editInCart");
-    const configRes = await axios({
-      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/configs`,
-      method: "put",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${jwt}`
-      },
-      data: {
-        shopId: shopId,
-        editInCart: !editInCart
-      }
-    });
-
-    const configData = configRes.data;
-    if (configData && configData.statusCode === 200) {
-      setEditInCart(!editInCart);
-      setUpdating(null);
-    } else {
-      setUpdating('Error');
-    }
-  }, [editInCart]);
-
-  const handlePriceAddOnChange = useCallback(async () => {
-    setUpdating("editInCart");
-    const configRes = await axios({
-      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/configs`,
-      method: "put",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${jwt}`
-      },
-      data: {
-        shopId: shopId,
-        priceAddOns: !priceAddOn
-      }
-    });
-
-    const configData = configRes.data;
-    if (configData && configData.statusCode === 200) {
-      setPriceAddOn(!priceAddOn);
-      setUpdating(null);
-    } else {
-      setUpdating('Error');
-    }
-  }, [priceAddOn]);
-
-  useEffect(() => {
-    fetchConfigData();
-  }, [fetchConfigData]);
+  }
 
   return (
     <Page title="Dashboard">
@@ -131,7 +48,7 @@ export default function Home({ jwt, shopId }) {
                   />
                   <Text fontWeight="500">Option set for product</Text>
                 </div>
-                <Switch size="md" isChecked={appStatus} onChange={handleAppStatusChange} />
+                <Switch size="md" isChecked={configs.appStatus} onChange={() => handleConfigChange('appStatus')} />
               </div>
               <Text fontSize="13px" fontWeight="400">
                 Store owners can create and apply option sets to multiple
@@ -164,7 +81,7 @@ export default function Home({ jwt, shopId }) {
                   />
                   <Text fontWeight="medium">In-cart Editing</Text>
                 </div>
-                <Switch size="md" colorScheme="teal" isChecked={editInCart} onChange={handleEditInCartChange} />
+                <Switch size="md" colorScheme="teal" isChecked={configs.editInCart} onChange={() => handleConfigChange('editInCart')} />
               </div>
               <Text fontSize="13px" fontWeight="400">
                 Customers can edit the selected options on cart page
@@ -191,7 +108,7 @@ export default function Home({ jwt, shopId }) {
                   />
                   <Text fontWeight="medium">Price Add-ons</Text>
                 </div>
-                <Switch size="md" colorScheme="linkedin" isChecked={priceAddOn} onChange={handlePriceAddOnChange} />
+                <Switch size="md" colorScheme="linkedin" isChecked={configs.priceAddOns} onChange={() => handleConfigChange('priceAddOns')} />
               </div>
               <Text fontSize="13px" fontWeight="400">
                 Store owner can charge customers additional fee when they select
@@ -216,12 +133,37 @@ export async function getServerSideProps(context) {
   if (!jwt) {
     res.writeHead(301, { Location: "/login.html" });
     res.end();
+  } 
+
+  let initialConfig = {
+    appStatus: false,
+    editInCart: false,
+    priceAddOns: false
+  }
+
+  const configRes = await axios({
+    url: `${process.env.NEXT_PUBLIC_SERVER_URL}/configs`,
+    method: "get",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${jwt}`
+    }
+  });
+
+  const configData = configRes.data;
+  if (configRes && configData.statusCode === 200) {
+    initialConfig = {
+      appStatus: configData.payload.appStatus,
+      editInCart: configData.payload.editInCart,
+      priceAddOns: configData.payload.priceAddOns
+    }
   }
 
   return {
     props: {
       jwt,
-      shopId
+      shopId,
+      initialConfig
     }
   }
 }
