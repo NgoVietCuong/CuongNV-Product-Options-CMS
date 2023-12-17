@@ -1,5 +1,9 @@
-.Polaris-ShadowBevel {
-  --pc-shadow-bevel-content-xs: none!important;
+* {
+  font-family: '__Inter_a64ecd';
+  font-size: 0.8rem;
+}
+
+.Polaris-LegacyCard {
   box-shadow: rgba(0, 27, 71, 0.08) 0px 3px 7px!important;
 }
 
@@ -10,6 +14,38 @@
 .Polaris-Header-Title {
   font-size: 25px!important;
   font-weight: 500!important;
+}
+
+.Polaris-Select,
+.Polaris-TextField {
+  display: flex;
+  height: 34px;
+  align-items: center;
+}
+
+/* UI components */
+.Polaris-Button,
+.Polaris-TextField {
+  border-radius: 0.375rem!important;
+}
+
+/* Option set list page */
+h3.Polaris-Text--bodyMd {
+  font-weight: 500!important;
+  font-size: 0.85rem!important;
+}
+
+p.Polaris-Text--bodyMd {
+  font-weight: 400!important;
+  font-size: 0.85rem!important;
+}
+
+h6.Polaris-Text--bodySm {
+  font-size: 0.65rem!important;
+}
+
+h6.Polaris-Text--bodyMd {
+  font-size: 0.8rem!important;
 }
 
 h1, h2, h3, h4, h5, h6, p {

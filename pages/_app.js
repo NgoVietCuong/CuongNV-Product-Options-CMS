@@ -7,6 +7,11 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { Inter } from "next/font/google";
 import SideBar from "@/components/Layout/SideBar";
 import TopBar from "@/components/Layout/TopBar";
+import theme from '@/theme';
+import '@fontsource/inter/latin-300.css';
+import '@fontsource/inter/latin-400.css';
+import '@fontsource/inter/latin-500.css';
+import '@fontsource/inter/latin-600.css';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,7 +20,7 @@ export default function App({ Component, pageProps }) {
   return (
     <div className={inter.className}>
       <AppProvider i18n={en}>
-        <ChakraProvider>
+        <ChakraProvider theme={theme}>
           <Box minH="100vh" bg={useColorModeValue("gray.50", "gray.900")}>
             <SideBar />
             <TopBar onOpen={onOpen} />

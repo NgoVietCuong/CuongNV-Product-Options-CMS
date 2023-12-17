@@ -1,16 +1,19 @@
 import {
   Filters,
   Page,
-  Button,
   LegacyCard,
   ResourceList,
   ResourceItem,
   Text,
+  Badge,
+  HorizontalStack,
+  VerticalStack
 } from "@shopify/polaris";
+import { Button } from "@chakra-ui/react";
 import { useState, useCallback } from "react";
 import { useRouter } from "next/router";
 
-export default function OptionSets() {
+export default function OptionSets({ jwt, shopId }) {
   const router = useRouter();
   const [selectedItems, setSelectedItems] = useState([]);
   const [sortValue, setSortValue] = useState("DATE_MODIFIED_DESC");
@@ -79,11 +82,11 @@ export default function OptionSets() {
       onQueryClear={handleQueryValueRemove}
       onClearAll={handleClearAll}
     >
-      <div style={{ paddingLeft: "8px" }}>
-        <Button onClick={() => router.push("/option-sets/create")}>
+      {/* <div style={{ paddingLeft: "8px" }}>
+        <Button size="sm" h="34px" variant="outline" colorScheme="gray" onClick={() => router.push("/option-sets/create")}>
           Search
         </Button>
-      </div>
+      </div> */}
     </Filters>
   );
 
@@ -91,8 +94,8 @@ export default function OptionSets() {
     <Page
       title="Option Sets"
       primaryAction={
-        <Button primary onClick={() => router.push("/option-sets/create")}>
-          Create new option set
+        <Button size="sm" h="34px" variant="solid" colorScheme="blue" onClick={() => router.push("/option-sets/create")}>
+          Create option set
         </Button>
       }
     >
@@ -128,10 +131,50 @@ export default function OptionSets() {
         accessibilityLabel={`View details for ${name}`}
         persistActions
       >
-        <Text variant="bodyMd" fontWeight="bold" as="h3">
-          {name}
-        </Text>
+        <HorizontalStack align="space-between">
+          <Text variant="bodyMd" fontWeight="bold" as="h3">
+            {name}
+          </Text>
+          <Badge status="info" progress="complete">Enable</Badge>
+          <VerticalStack gap="1px">
+            <Text variant="bodySm" as="h6" color="subdued">
+              Created at
+            </Text>
+            <Text variant="bodyMd" as="h6">
+              20/10/2023, 11:32:43 PM
+            </Text>
+          </VerticalStack>
+          <VerticalStack>
+            <Text variant="bodySm" as="h6" color="subdued">
+              Updated at
+            </Text>
+            <Text variant="bodyMd" as="h6">
+              20/10/2023, 11:32:43 PM
+            </Text>
+          </VerticalStack>
+          <Text variant="bodyMd" as="p">
+            All collections
+          </Text>
+        </HorizontalStack>
       </ResourceItem>
     );
+  }
+}
+
+export async function getServerSideProps(context) {
+  const { req } = context;
+  const jwt = req.cookies.jwtToken;
+  const shopId = req.cookies.shopId;
+
+  if (!jwt) {
+    res.writeHead(301, { Location: "/login.html" });
+    res.end();
+  }
+
+  return {
+    props: {
+      jwt,
+      shopId
+    }
   }
 }

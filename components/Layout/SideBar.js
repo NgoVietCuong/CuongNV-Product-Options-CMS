@@ -20,8 +20,7 @@ export default function SideBar() {
 
   const LinkItems = [
     { name: "Dashboard", href: "/", icon: FiHome },
-    { name: "Option Sets", href: "/option-sets", icon: FiArchive },
-    { name: "Settings", href: "/settings", icon: FiSettings },
+    { name: "Option Sets", href: "/option-sets", icon: FiArchive }
   ];
 
   const isSelected = (path) => {
@@ -90,7 +89,7 @@ export default function SideBar() {
         </Flex>
         {LinkItems.map((link) => (
           <NavItem key={link.name} href={link.href} icon={link.icon}>
-            {link.name}
+            <Text fontSize="14px" color={isSelected(link.href) ? "white" : "#353535"}>{link.name}</Text>
           </NavItem>
         ))}
       </Box>
