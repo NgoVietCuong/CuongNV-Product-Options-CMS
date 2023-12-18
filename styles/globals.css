@@ -44,7 +44,7 @@ ul.Polaris-VerticalStack.Polaris-VerticalStack--listReset li:not(:first-child) {
 }
 
 .Polaris-TopBar {
-  background-color: #1A365D!important;
+  background-color: #2A4365!important;
 }
 
 .Polaris-Navigation {
@@ -57,7 +57,48 @@ ul.Polaris-VerticalStack.Polaris-VerticalStack--listReset li:not(:first-child) {
 }
 
 .Polaris-TopBar-Menu__Activator {
-  background-color: white!important;
+  background-color: #2D3748!important;
+  padding: 0.125rem!important;
+  border-radius: 0.5rem!important;
+  margin-right: 30px!important;
+}
+
+.Polaris-TopBar-UserMenu__Details {
+  padding: 0 0.5rem 0 .625rem!important;
+  margin-right: 0!important;
+}
+
+.Polaris-TopBar-UserMenu__Details p {
+  color: #e3e3e3;
+}
+
+.Polaris-Avatar {
+  border-radius: 0.375rem!important;
+  width: 1.75rem!important;
+}
+
+.Polaris-Frame-Loading__Level {
+  background-color: rgba(42, 172, 187, 1)!important;
+}
+
+/* Navigation */
+.Polaris-Navigation__Icon .Polaris-Icon {
+  display: flex!important;
+  align-items: center;
+}
+
+.Polaris-Navigation__Icon svg {
+  fill: none!important;
+}
+
+.Polaris-Navigation__Item svg {
+  font-size: 16px!important;
+  width: 1em!important;
+  height: 1em!important;
+}
+
+.Polaris-Navigation__Item:is(:hover, :focus-visible) {
+  background: #EDF2F7!important;
 }
 
 /* Option set list page */

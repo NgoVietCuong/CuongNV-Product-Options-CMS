@@ -1,5 +1,4 @@
 import {
-  CloseButton,
   Box,
   useColorModeValue,
   Flex,
@@ -74,21 +73,6 @@ export default function SideBar() {
         pt="20px"
         bg="white"
       >
-        {/* <Flex
-          h="20"
-          alignItems="center"
-          mx="8"
-          justifyContent="space-between"
-          w="100%"
-        >
-          <Text fontSize="22px" fontWeight="600">
-            Product Options
-          </Text>
-          <CloseButton
-            display={{ base: "flex", md: "none" }}
-            onClick={onClose}
-          />
-        </Flex> */}
         {LinkItems.map((link) => (
           <NavItem key={link.name} href={link.href} icon={link.icon}>
             <Text fontSize="14px" fontWeight="500" color={isSelected(link.href) ? "blue.600" : "#353535"}>{link.name}</Text>

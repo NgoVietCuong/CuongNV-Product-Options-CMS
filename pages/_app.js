@@ -3,6 +3,7 @@ import "@shopify/polaris/build/esm/styles.css";
 import en from "@shopify/polaris/locales/en.json";
 import { AppProvider } from "@shopify/polaris";
 import { ChakraProvider } from "@chakra-ui/react";
+import {useState, useCallback} from 'react';
 import { FiHome, FiArchive } from "react-icons/fi";
 // import SideBar from "@/components/Layout/SideBar";
 // import TopBar from "@/components/Layout/TopBar";
@@ -18,8 +19,6 @@ import {
   TextContainer,
   TopBar,
 } from '@shopify/polaris';
-import {useState, useCallback, useRef} from 'react';
-
 
 
 export default function App({ Component, pageProps }) {
@@ -41,8 +40,8 @@ export default function App({ Component, pageProps }) {
   
   const userMenuMarkup = (
     <TopBar.UserMenu
-      name="Test CuongNV DA"
-      initials="TC"
+      name="CuongNV DA"
+      initials="CD"
     />
   );
   
@@ -55,16 +54,17 @@ export default function App({ Component, pageProps }) {
   );
   
   const navigationMarkup = (
-    <Navigation location="/">
+    <Navigation>
       <Navigation.Section
         items={[
           {
             label: 'Dashboard',
             icon: FiHome,
+            selected: true,
             onClick: toggleIsLoading,
           },
           {
-            label: 'Option sets',
+            label: 'Option Sets',
             icon: FiArchive,
             onClick: toggleIsLoading,
           },
@@ -82,7 +82,7 @@ export default function App({ Component, pageProps }) {
           <LegacyCard sectioned>
             <TextContainer>
               <SkeletonDisplayText size="small" />
-              <SkeletonBodyText lines={9} />
+              <SkeletonBodyText lines={5} />
             </TextContainer>
           </LegacyCard>
         </Layout.Section>
