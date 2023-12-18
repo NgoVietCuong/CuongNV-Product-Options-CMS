@@ -6,10 +6,9 @@ import {
   ResourceItem,
   Text,
   Badge,
-  HorizontalStack,
   VerticalStack
 } from "@shopify/polaris";
-import { Button } from "@chakra-ui/react";
+import { Button, Grid, GridItem } from "@chakra-ui/react";
 import { useState, useCallback } from "react";
 import { useRouter } from "next/router";
 
@@ -109,8 +108,8 @@ export default function OptionSets({ jwt, shopId }) {
           bulkActions={bulkActions}
           sortValue={sortValue}
           sortOptions={[
-            { label: "Newest update", value: "DATE_MODIFIED_DESC" },
-            { label: "Oldest update", value: "DATE_MODIFIED_ASC" },
+            { label: "Newest updated", value: "DATE_MODIFIED_DESC" },
+            { label: "Oldest updated", value: "DATE_MODIFIED_ASC" },
           ]}
           onSortChange={(selected) => {
             setSortValue(selected);
@@ -131,31 +130,44 @@ export default function OptionSets({ jwt, shopId }) {
         accessibilityLabel={`View details for ${name}`}
         persistActions
       >
-        <HorizontalStack align="space-between">
-          <Text variant="bodyMd" fontWeight="bold" as="h3">
-            {name}
-          </Text>
-          <Badge status="info" progress="complete">Enable</Badge>
-          <VerticalStack gap="1px">
+        <Grid w='100%' gridTemplateColumns="1fr 0.7fr 1.1fr 1.1fr 0.6fr" alignItems='center'>
+          <GridItem >
+            <Text variant="bodyMd" fontWeight="bold" as="h3">
+              {name}
+            </Text>
+          </GridItem>
+          <GridItem >
+            <Badge status="info" progress="complete">Enable</Badge>
+          </GridItem>
+          <GridItem >
+            <VerticalStack gap="1px">
+              <Text variant="bodySm" as="h6" color="subdued">
+                Created at
+              </Text>
+              <Text variant="bodyMd" as="h6">
+                20/10/2023, 11:32:43 PM
+              </Text>
+            </VerticalStack>
+          </GridItem>
+          <GridItem >
+            <VerticalStack>
+              <Text variant="bodySm" as="h6" color="subdued">
+                Updated at
+              </Text>
+              <Text variant="bodyMd" as="h6">
+                20/10/2023, 11:32:43 PM
+              </Text>
+            </VerticalStack>
+          </GridItem>
+          <GridItem>
             <Text variant="bodySm" as="h6" color="subdued">
-              Created at
+              Apply to
             </Text>
             <Text variant="bodyMd" as="h6">
-              20/10/2023, 11:32:43 PM
+              All products
             </Text>
-          </VerticalStack>
-          <VerticalStack>
-            <Text variant="bodySm" as="h6" color="subdued">
-              Updated at
-            </Text>
-            <Text variant="bodyMd" as="h6">
-              20/10/2023, 11:32:43 PM
-            </Text>
-          </VerticalStack>
-          <Text variant="bodyMd" as="p">
-            All collections
-          </Text>
-        </HorizontalStack>
+          </GridItem>
+        </Grid>
       </ResourceItem>
     );
   }

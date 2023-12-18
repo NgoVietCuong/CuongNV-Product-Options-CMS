@@ -55,7 +55,7 @@ export default function Home({ jwt, shopId }) {
                     />
                     <Text fontWeight="500" fontSize="14px">Option set for product</Text>
                   </div>
-                  {data && <Switch size="md" isChecked={data.payload.appStatus} /> }
+                  {data && <Switch size="md" colorScheme="blue" isChecked={data.payload.appStatus} onChange={() => handleConfigChange("appStatus")} /> }
                 </div>
                 <Text fontSize="13px" fontWeight="400">
                   Store owners can create and apply option sets to multiple
@@ -115,7 +115,7 @@ export default function Home({ jwt, shopId }) {
                     />
                     <Text fontWeight="medium" fontSize="14px">Price Add-ons</Text>
                   </div>
-                  {data && <Switch size="md" colorScheme="linkedin" isChecked={data.payload.priceAddOns} /> }
+                  {data && <Switch size="md" colorScheme="linkedin" isChecked={data.payload.priceAddOns} onChange={() => handleConfigChange("priceAddOns")} /> }
                 </div>
                 <Text fontSize="13px" fontWeight="400">
                   Store owner can charge customers additional fee when they select

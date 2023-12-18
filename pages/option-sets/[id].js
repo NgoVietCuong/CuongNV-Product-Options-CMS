@@ -9,6 +9,7 @@ import { useState, useCallback } from "react";
 
 import CustomerForm from "@/components/Forms/CustomerForm";
 import ProductForm from "@/components/Forms/ProductForm";
+import OptionCard from "@/components/Options/OptionCard";
 
 export default function UpdateOptionSet() {
   const [name, setName] = useState("");
@@ -51,10 +52,11 @@ export default function UpdateOptionSet() {
             type="number"
             value={priority}
             onChange={handlePriorityChange}
+            helpText="0 is the highest priority. When there are two Option Sets set for the same products/customers, the one with higher priority will be applied."
             autoComplete="off"
           />
           <Select
-            label="Date range"
+            label="Status"
             options={options}
             onChange={handleStatusChange}
             value={status}
@@ -64,6 +66,7 @@ export default function UpdateOptionSet() {
 
       <CustomerForm />
       <ProductForm />
+      <OptionCard />
     </Page>
   );
 }

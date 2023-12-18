@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { Link } from "@chakra-ui/react";
-import { FiHome, FiArchive, FiSettings } from "react-icons/fi";
+import { FiHome, FiArchive } from "react-icons/fi";
 import { useRouter } from "next/router";
 
 export default function SideBar() {
@@ -50,8 +50,8 @@ export default function SideBar() {
           _hover={{
             bg: "gray.100",
           }}
-          bg={isSelected(href) ? "blue.500!important" : undefined}
-          color={isSelected(href) ? "white" : "#353535"}
+          bg={isSelected(href) ? "blue.50!important" : undefined}
+          color={isSelected(href) ? "blue.600" : "#353535"}
         >
           {icon && <Icon mr="4" fontSize="16" as={icon} />}
           {children}
@@ -64,15 +64,17 @@ export default function SideBar() {
     return (
       <Box
         transition="3s ease"
-        bg={useColorModeValue("white", "gray.900")}
         borderRight="1px"
         borderRightColor={useColorModeValue("gray.200", "gray.700")}
         w={{ base: "full", md: 60 }}
         pos="fixed"
         h="full"
         {...rest}
+        marginTop="56px"
+        pt="20px"
+        bg="white"
       >
-        <Flex
+        {/* <Flex
           h="20"
           alignItems="center"
           mx="8"
@@ -86,10 +88,10 @@ export default function SideBar() {
             display={{ base: "flex", md: "none" }}
             onClick={onClose}
           />
-        </Flex>
+        </Flex> */}
         {LinkItems.map((link) => (
           <NavItem key={link.name} href={link.href} icon={link.icon}>
-            <Text fontSize="14px" color={isSelected(link.href) ? "white" : "#353535"}>{link.name}</Text>
+            <Text fontSize="14px" fontWeight="500" color={isSelected(link.href) ? "blue.600" : "#353535"}>{link.name}</Text>
           </NavItem>
         ))}
       </Box>

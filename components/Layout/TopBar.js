@@ -1,42 +1,136 @@
 import {
   useColorModeValue,
   Text,
-  IconButton,
+  Image,
   Avatar,
   Flex,
   HStack,
   VStack,
 } from "@chakra-ui/react";
-import { FiMenu, FiChevronDown } from "react-icons/fi";
+import {TopBar, ActionList, Icon, Frame} from '@shopify/polaris';
+import {ArrowLeftMinor, QuestionMarkMajor} from '@shopify/polaris-icons';
+import {useState, useCallback} from 'react';
 
-export default function TopBar({ onOpen, ...rest }) {
+export default function TopBarNE({ onOpen, ...rest }) {
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isSecondaryMenuOpen, setIsSecondaryMenuOpen] = useState(false);
+  const [isSearchActive, setIsSearchActive] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
+
+  const toggleIsUserMenuOpen = useCallback(
+    () => setIsUserMenuOpen((isUserMenuOpen) => !isUserMenuOpen),
+    [],
+  );
+
+  const toggleIsSecondaryMenuOpen = useCallback(
+    () => setIsSecondaryMenuOpen((isSecondaryMenuOpen) => !isSecondaryMenuOpen),
+    [],
+  );
+
+  const handleSearchResultsDismiss = useCallback(() => {
+    setIsSearchActive(false);
+    setSearchValue('');
+  }, []);
+
+  const handleSearchChange = useCallback((value) => {
+    setSearchValue(value);
+    setIsSearchActive(value.length > 0);
+  }, []);
+
+  const handleNavigationToggle = useCallback(() => {
+    console.log('toggle navigation visibility');
+  }, []);
+  const logo = {
+    topBarSource:
+      'https://cdn.shopify.com/s/files/1/2376/3301/files/Shopify_Secondary_Inverted.png',
+    width: 86,
+    url: '#',
+    accessibilityLabel: 'Shopify',
+  };
+
+  const userMenuMarkup = (
+    <TopBar.UserMenu
+      actions={[
+        {
+          items: [{content: 'Back to Shopify', icon: ArrowLeftMinor}],
+        },
+        {
+          items: [{content: 'Community forums'}],
+        },
+      ]}
+      name="Dharma"
+      detail="Jaded Pixel"
+      initials="D"
+      open={isUserMenuOpen}
+      onToggle={toggleIsUserMenuOpen}
+    />
+  );
+
+  const searchResultsMarkup = (
+    <ActionList
+      items={[{content: 'Shopify help center'}, {content: 'Community forums'}]}
+    />
+  );
+
+  const searchFieldMarkup = (
+    <TopBar.SearchField
+      onChange={handleSearchChange}
+      value={searchValue}
+      placeholder="Search"
+      showFocusBorder
+    />
+  );
+
+  const secondaryMenuMarkup = (
+    <TopBar.Menu
+      activatorContent={
+        <span>
+          <Icon source={QuestionMarkMajor} />
+          <Text as="span" visuallyHidden>
+            Secondary menu
+          </Text>
+        </span>
+      }
+      open={isSecondaryMenuOpen}
+      onOpen={toggleIsSecondaryMenuOpen}
+      onClose={toggleIsSecondaryMenuOpen}
+      actions={[
+        {
+          items: [{content: 'Community forums'}],
+        },
+      ]}
+    />
+  );
+
+  const topBarMarkup = (
+    <TopBar
+      showNavigationToggle
+      userMenu={userMenuMarkup}
+      secondaryMenu={secondaryMenuMarkup}
+      searchResultsVisible={isSearchActive}
+      searchField={searchFieldMarkup}
+      searchResults={searchResultsMarkup}
+      onSearchResultsDismiss={handleSearchResultsDismiss}
+      onNavigationToggle={handleNavigationToggle}
+    />
+  );
+
   return (
     <Flex
       ml={{ base: 0, md: 60 }}
       px={{ base: 4, md: 4 }}
-      height="56px"
+      height="57px"
       alignItems="center"
-      bg={useColorModeValue("white", "gray.900")}
+      zIndex="10"
+      width="100%"
+      marginLeft="0!important"
+      bg={"#1A365D"}
       borderBottomWidth="1px"
       borderBottomColor={useColorModeValue("gray.200", "gray.700")}
-      justifyContent={{ base: "space-between", md: "flex-end" }}
+      justifyContent={{ base: "space-between"}}
       {...rest}
     >
-      <IconButton
-        display={{ base: "flex", md: "none" }}
-        onClick={onOpen}
-        variant="outline"
-        aria-label="open menu"
-        icon={<FiMenu />}
-      />
-
-      <Text
-        display={{ base: "flex", md: "none" }}
-        fontSize="2xl"
-        fontWeight="bold"
-      >
-        Logo
-      </Text>
+      <Image w="86px" src="https://cdn.shopify.com/s/files/1/2376/3301/files/Shopify_Secondary_Inverted.png" />
 
       <HStack spacing={{ base: "0", md: "6" }}>
         <Flex alignItems={"center"}>
@@ -45,7 +139,7 @@ export default function TopBar({ onOpen, ...rest }) {
               bg="blue.500"
               color="white"
               size={"sm"}
-              name={"Ngo Cuong"}
+              name={"Admin"}
             />
             <VStack
               display={{ base: "none", md: "flex" }}
@@ -53,11 +147,12 @@ export default function TopBar({ onOpen, ...rest }) {
               spacing="1px"
               ml="2"
             >
-              <Text fontSize="sm">Ngo Cuong</Text>
+              <Text fontSize="sm" color="white">Admin</Text>
             </VStack>
           </HStack>
         </Flex>
       </HStack>
     </Flex>
+    // <Frame topBar={topBarMarkup} logo={logo} />
   );
 }
