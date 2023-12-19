@@ -1,27 +1,26 @@
 import "@/styles/globals.css";
 import "@shopify/polaris/build/esm/styles.css";
 import en from "@shopify/polaris/locales/en.json";
-import { AppProvider } from "@shopify/polaris";
-import { ChakraProvider } from "@chakra-ui/react";
-import {useState, useCallback} from 'react';
-import { FiHome, FiArchive } from "react-icons/fi";
-// import SideBar from "@/components/Layout/SideBar";
-// import TopBar from "@/components/Layout/TopBar";
+import { useRouter } from "next/router";
+import { useState, useCallback, useEffect } from 'react';
 import {
+  AppProvider,
   LegacyCard,
   Frame,
   Layout,
   Loading,
-  Navigation,
   SkeletonBodyText,
   SkeletonDisplayText,
   SkeletonPage,
-  TextContainer,
-  TopBar,
+  VerticalStack,
+  TextContainer
 } from '@shopify/polaris';
-
+import { ChakraProvider } from "@chakra-ui/react";
+import CustomTopBar from "@/components/Layout/TopBar";
+import NavigationBar from "@/components/Layout/NavigationBar";
 
 export default function App({ Component, pageProps }) {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [mobileNavigationActive, setMobileNavigationActive] = useState(false);
   
@@ -37,41 +36,16 @@ export default function App({ Component, pageProps }) {
     () => setIsLoading((isLoading) => !isLoading),
     [],
   );
-  
-  const userMenuMarkup = (
-    <TopBar.UserMenu
-      name="CuongNV DA"
-      initials="CD"
-    />
-  );
-  
-  const topBarMarkup = (
-    <TopBar
-      showNavigationToggle
-      userMenu={userMenuMarkup}
-      onNavigationToggle={toggleMobileNavigationActive}
-    />
-  );
-  
-  const navigationMarkup = (
-    <Navigation>
-      <Navigation.Section
-        items={[
-          {
-            label: 'Dashboard',
-            icon: FiHome,
-            selected: true,
-            onClick: toggleIsLoading,
-          },
-          {
-            label: 'Option Sets',
-            icon: FiArchive,
-            onClick: toggleIsLoading,
-          },
-        ]}
-      />
-    </Navigation>
-  );
+
+  useEffect(() => {
+    router.events.on("routeChangeStart", toggleIsLoading);
+    router.events.on("routeChangeComplete", toggleIsLoading);
+
+    return () => {
+      router.events.off("routeChangeStart", toggleIsLoading);
+      router.events.off("routeChangeComplete", toggleIsLoading);
+    }
+  }, [isLoading]);
   
   const loadingMarkup = isLoading ? <Loading /> : null;
   
@@ -82,7 +56,7 @@ export default function App({ Component, pageProps }) {
           <LegacyCard sectioned>
             <TextContainer>
               <SkeletonDisplayText size="small" />
-              <SkeletonBodyText lines={5} />
+              <SkeletonBodyText lines={6} />
             </TextContainer>
           </LegacyCard>
         </Layout.Section>
@@ -103,17 +77,10 @@ export default function App({ Component, pageProps }) {
   return (
     <ChakraProvider>
       <AppProvider i18n={en}>
-        {/* <Box minH="100vh" bg={useColorModeValue("gray.50", "gray.900")}>
-          <SideBar />
-          <TopBar onOpen={onOpen} />
-          <Box ml={{ base: 0, md: 60 }} p="4">
-            <Component {...pageProps} />
-          </Box>
-        </Box> */}
          <Frame
           logo={logo}
-          topBar={topBarMarkup}
-          navigation={navigationMarkup}
+          topBar={<CustomTopBar toggleMobileNavigationActive={toggleMobileNavigationActive} />}
+          navigation={<NavigationBar />}
           showMobileNavigation={mobileNavigationActive}
           onNavigationDismiss={toggleMobileNavigationActive}
         >

@@ -13,7 +13,6 @@ import {
   ButtonGroup,
   IconButton,
   Tooltip,
-
 } from "@chakra-ui/react";
 import { IoDuplicate, IoTrashBin } from "react-icons/io5";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
@@ -51,12 +50,12 @@ export default function Option() {
               color="blue.500"
               padding="0"
               marginRight="10px"
+              fontSize="15px"
               onClick={handleToggle}
-              rightIcon={open ? <IoIosArrowDown /> : <IoIosArrowUp />}
+              rightIcon={open ? <IoIosArrowUp /> : <IoIosArrowDown />}
             >Untitle Option</Button>
-            <Text color="subdued">Type: {options.find(option => option.value === selected).label}</Text>
+            <Text color="subdued" as="p">Type: {options.find(option => option.value === selected).label}</Text>
           </HorizontalStack>
-          
             
           <ButtonGroup variant="segmented">
             <Tooltip  ml='-5px' py='5px' label='Duplicate option' placement='top' bg='white' color='blue.500' fontSize='13px'>
