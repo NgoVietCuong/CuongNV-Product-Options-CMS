@@ -50,10 +50,10 @@ export default function Option() {
               color="blue.500"
               padding="0"
               marginRight="10px"
-              fontSize="15px"
+              fontSize="14px"
               onClick={handleToggle}
               rightIcon={open ? <IoIosArrowUp /> : <IoIosArrowDown />}
-            >Untitle Option</Button>
+            >Untitled Option</Button>
             <Text color="subdued" as="p">Type: {options.find(option => option.value === selected).label}</Text>
           </HorizontalStack>
             

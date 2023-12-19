@@ -65,6 +65,7 @@ ul.Polaris-VerticalStack.Polaris-VerticalStack--listReset li:not(:first-child) {
 
 .Polaris-TopBar-UserMenu__Details p {
   color: #e3e3e3;
+  font-size: 0.75rem!important;
 }
 
 .Polaris-Avatar {
@@ -82,7 +83,7 @@ ul.Polaris-VerticalStack.Polaris-VerticalStack--listReset li:not(:first-child) {
 } 
 
 .Polaris-Navigation__Text {
-  font-size: 15px!important;
+  font-size: 14px!important;
   margin-left: 5px;
 }
 
@@ -135,11 +136,11 @@ ul.Polaris-VerticalStack.Polaris-VerticalStack--listReset li:not(:first-child) {
 /* Option set list page */
 h3.Polaris-Text--bodyMd {
   font-weight: 500!important;
-  font-size: 13px!important;
+  font-size: 14px!important;
 }
 
 h6.Polaris-Text--bodySm {
-  font-size: 11px!important;
+  font-size: 10px!important;
 }
 
 h6.Polaris-Text--bodyMd {
@@ -150,7 +151,7 @@ h6.Polaris-Text--bodyMd {
 .Polaris-Label__Text,
 .Polaris-Choice__Label span,
 p.Polaris-Text--subdued  {
-  font-size: 14px!important;
+  font-size: 13px!important;
 }
 
 .Polaris-Header-Title {

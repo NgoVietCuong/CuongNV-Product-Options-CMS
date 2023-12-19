@@ -53,7 +53,7 @@ export default function Home({ jwt, shopId }) {
                       border="none"
                       icon={<IoIosListBox size="20px" />}
                     />
-                    <Text fontWeight="500" fontSize="15px">Option set for product</Text>
+                    <Text fontWeight="500" fontSize="14px">Option set for product</Text>
                   </div>
                   {data && <Switch size="md" colorScheme="blue" isChecked={data.payload.appStatus} onChange={() => handleConfigChange("appStatus")} /> }
                 </div>
@@ -86,7 +86,7 @@ export default function Home({ jwt, shopId }) {
                       border="none"
                       icon={<IoMdCart size={"20px"} />}
                     />
-                    <Text fontWeight="medium" fontSize="15px">In-cart Editing</Text>
+                    <Text fontWeight="medium" fontSize="14px">In-cart Editing</Text>
                   </div>
                   {data && <Switch size="md" colorScheme="teal" isChecked={data.payload.editInCart} onChange={() => handleConfigChange("editInCart")} />}
                 </div>
@@ -113,7 +113,7 @@ export default function Home({ jwt, shopId }) {
                       border="none"
                       icon={<IoMdPricetags size={"20px"} />}
                     />
-                    <Text fontWeight="medium" fontSize="15px">Price Add-ons</Text>
+                    <Text fontWeight="medium" fontSize="14px">Price Add-ons</Text>
                   </div>
                   {data && <Switch size="md" colorScheme="linkedin" isChecked={data.payload.priceAddOns} onChange={() => handleConfigChange("priceAddOns")} /> }
                 </div>
