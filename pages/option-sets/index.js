@@ -1,3 +1,5 @@
+import { useState, useCallback, useEffect } from "react";
+import { useRouter } from "next/router";
 import {
   Filters,
   Page,
@@ -9,14 +11,18 @@ import {
   VerticalStack
 } from "@shopify/polaris";
 import { Button, Grid, GridItem } from "@chakra-ui/react";
-import { useState, useCallback } from "react";
-import { useRouter } from "next/router";
+import parseCookies from "@/utils/parseCookies";
 
 export default function OptionSets({ jwt, shopId }) {
   const router = useRouter();
   const [selectedItems, setSelectedItems] = useState([]);
   const [sortValue, setSortValue] = useState("DATE_MODIFIED_DESC");
   const [queryValue, setQueryValue] = useState(undefined);
+
+
+  useEffect(() => {
+    console.log("test", parseCookies(document.cookie))
+  }, [])
 
   const handleQueryValueChange = useCallback(
     (value) => setQueryValue(value),
@@ -170,23 +176,5 @@ export default function OptionSets({ jwt, shopId }) {
         </Grid>
       </ResourceItem>
     );
-  }
-}
-
-export async function getServerSideProps(context) {
-  const { req } = context;
-  const jwt = req.cookies.jwtToken;
-  const shopId = req.cookies.shopId;
-
-  if (!jwt) {
-    res.writeHead(301, { Location: "/login.html" });
-    res.end();
-  }
-
-  return {
-    props: {
-      jwt,
-      shopId
-    }
   }
 }
