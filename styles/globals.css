@@ -74,13 +74,25 @@ h1, h2, h3, h4, h5, h6, p {
   background-color: rgba(102, 153, 225, 1)!important;
 }
 
-/* Selected Items */
-div+.Polaris-Banner {
-  margin-top: 10px!important;
+/* Scrollable */
+.Polaris-Scrollable {
+  /* margin-top: 5px!important; */
 }
 
-.Polaris-Banner .Polaris-Icon {
+/* Selected Items Banner */
+.Polaris-FormLayout__Item > .Polaris-Banner.Polaris-Banner--statusInfo {
+  margin-top: 0.5rem!important;
+  background-color: #EDF2F7!important;
+  border: none!important;
+}
+
+.Polaris-Banner .Polaris-Icon.Polaris-Icon--colorHighlight.Polaris-Icon--applyColor {
   display: none!important;
+}
+
+.Polaris-Banner--withinContentContainer {
+  padding: 5px!important;
+  background-color: #A0AEC0;
 }
 
 /* Navigation */

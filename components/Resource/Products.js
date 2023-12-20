@@ -38,9 +38,15 @@ export default function ProductResource() {
   function renderSelectedItems(items) {
     return (
       items.map(item => {
+        console.log('item', item);
+        const itemData = initialProducts.find(product => product.id === item);
+        console.log("itemData", itemData)
         return (
-          <Banner status="info" onDismiss={() => {}}>
-            hihi
+          <Banner status="info" onDismiss={() => {console.log("ahihi")}}>
+            <HorizontalStack blockAlign="center" gap="4">
+              <Thumbnail source={itemData.featuredImage.url} size="small" />
+              <Text variant="bodyMd" fontWeight="bold" as="h3">{itemData.title}</Text>
+            </HorizontalStack>
           </Banner>
         )
         })
@@ -112,9 +118,9 @@ export default function ProductResource() {
         }
       />
       {products.length > 4 ? (
-        <Scrollable style={{height: '200px'}} focusable>
+        <Scrollable style={{height: '200px'}} horizontal={false} focusable>
           {renderSelectedItems(products)}
-      </Scrollable>      
+        </Scrollable>      
       ) : (
         <>
           {renderSelectedItems(products)}
