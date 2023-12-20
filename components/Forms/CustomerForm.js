@@ -1,26 +1,59 @@
-import { LegacyCard, ChoiceList } from "@shopify/polaris";
-import { useState, useCallback } from "react";
+import { useCallback, useContext } from "react";
+import { FormLayout, LegacyCard, RadioButton } from "@shopify/polaris";
+import OptionSetContext from "@/context/OptionSetContext";
+import CustomerResource from "../Resource/Customers";
+import CustomerTagResource from "../Resource/CustomerTags";
 
 export default function CustomerForm() {
-  const [selected, setSelected] = useState("0");
-  const handleSelectChange = useCallback(
-    (value) => setSelected(value),
-    []
+  const { applyToCustomer, setApplyToCustomer, setIsDirty } = useContext(OptionSetContext);
+  const handleValueChange = useCallback(
+    (_, value) => {
+      setApplyToCustomer(value);
+      setIsDirty(true);
+    }, []
   );
 
   return (
     <LegacyCard title="Apply to Customers" sectioned>
-        <ChoiceList
-          choices={[
-            {label: "All customers", value: "0"},
-            {label: "Logged-in customers", value: "1"},
-            {label: "Not-logged-in customers", value: "2"},
-            {label: "Specific customers", value: "3"},
-            {label: "Customer tags", value: "4"}
-          ]}
-          selected={selected}
-          onChange={handleSelectChange}
-        />
+        <FormLayout>
+          <RadioButton
+            label="All customers"
+            id="0"
+            name="customers"
+            checked={applyToCustomer === "0"}
+            onChange={handleValueChange}
+          />
+          <RadioButton
+            label="Logged-in customers"
+            id="1"
+            name="customers"
+            checked={applyToCustomer === "1"}
+            onChange={handleValueChange}
+          />
+          <RadioButton
+            label="Not-logged-in customers"
+            id="2"
+            name="customers"
+            checked={applyToCustomer === "2"}
+            onChange={handleValueChange}
+          />
+          <RadioButton
+            label="Specific customers"
+            id="3"
+            name="customers"
+            checked={applyToCustomer === "3"}
+            onChange={handleValueChange}
+          />
+          {applyToCustomer === "3" && <CustomerResource />}
+          <RadioButton
+            label="Customer tags"
+            id="4"
+            name="customers"
+            checked={applyToCustomer === "4"}
+            onChange={handleValueChange}
+          />
+          {applyToCustomer === "4" && <CustomerTagResource />}
+        </FormLayout>
     </LegacyCard>
   );
 }

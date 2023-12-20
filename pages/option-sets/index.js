@@ -13,16 +13,11 @@ import {
 import { Button, Grid, GridItem } from "@chakra-ui/react";
 import parseCookies from "@/utils/parseCookies";
 
-export default function OptionSets({ jwt, shopId }) {
+export default function OptionSets() {
   const router = useRouter();
   const [selectedItems, setSelectedItems] = useState([]);
   const [sortValue, setSortValue] = useState("DATE_MODIFIED_DESC");
   const [queryValue, setQueryValue] = useState(undefined);
-
-
-  useEffect(() => {
-    console.log("test", parseCookies(document.cookie))
-  }, [])
 
   const handleQueryValueChange = useCallback(
     (value) => setQueryValue(value),
@@ -95,38 +90,6 @@ export default function OptionSets({ jwt, shopId }) {
     </Filters>
   );
 
-  return (
-    <Page
-      title="Option Sets"
-      primaryAction={
-        <Button size="sm" h="34px" variant="solid" colorScheme="blue" onClick={() => router.push("/option-sets/create")}>
-          Create option set
-        </Button>
-      }
-    >
-      <LegacyCard>
-        <ResourceList
-          resourceName={resourceName}
-          items={items}
-          renderItem={renderItem}
-          selectedItems={selectedItems}
-          onSelectionChange={setSelectedItems}
-          bulkActions={bulkActions}
-          sortValue={sortValue}
-          sortOptions={[
-            { label: "Newest updated", value: "DATE_MODIFIED_DESC" },
-            { label: "Oldest updated", value: "DATE_MODIFIED_ASC" },
-          ]}
-          onSortChange={(selected) => {
-            setSortValue(selected);
-            console.log(`Sort option changed to ${selected}.`);
-          }}
-          filterControl={filterControl}
-        />
-      </LegacyCard>
-    </Page>
-  );
-
   function renderItem(item) {
     const { id, url, name } = item;
     return (
@@ -177,4 +140,36 @@ export default function OptionSets({ jwt, shopId }) {
       </ResourceItem>
     );
   }
+
+  return (
+    <Page
+      title="Option Sets"
+      primaryAction={
+        <Button size="sm" h="34px" variant="solid" colorScheme="blue" onClick={() => router.push("/option-sets/create")}>
+          Create option set
+        </Button>
+      }
+    >
+      <LegacyCard>
+        <ResourceList
+          resourceName={resourceName}
+          items={items}
+          renderItem={renderItem}
+          selectedItems={selectedItems}
+          onSelectionChange={setSelectedItems}
+          bulkActions={bulkActions}
+          sortValue={sortValue}
+          sortOptions={[
+            { label: "Newest updated", value: "DATE_MODIFIED_DESC" },
+            { label: "Oldest updated", value: "DATE_MODIFIED_ASC" },
+          ]}
+          onSortChange={(selected) => {
+            setSortValue(selected);
+            console.log(`Sort option changed to ${selected}.`);
+          }}
+          filterControl={filterControl}
+        />
+      </LegacyCard>
+    </Page>
+  );
 }

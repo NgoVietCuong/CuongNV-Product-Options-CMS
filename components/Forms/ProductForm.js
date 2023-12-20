@@ -1,25 +1,55 @@
-import { LegacyCard, ChoiceList } from "@shopify/polaris";
-import { useState, useCallback } from "react";
+import { useCallback, useContext } from "react";
+import { FormLayout, LegacyCard, RadioButton } from "@shopify/polaris";
+import OptionSetContext from "@/context/OptionSetContext";
+import ProductResource from "../Resource/Products";
+import CollectionResource from "../Resource/Collections";
+import ProductTagResource from "../Resource/ProductTags";
 
-export default function ProductCard() {
-  const [selected, setSelected] = useState("0");
-  const handleSelectChange = useCallback(
-    (value) => setSelected(value),
-    []
-  );
+export default function ProductForm() {
+  const { applyToProduct, setApplyToProduct, setIsDirty } = useContext(OptionSetContext);
+
+  const handleValueChange = useCallback(
+    (_, value) => {
+      setApplyToProduct(value);
+      setIsDirty(true);
+    }, []
+  )
 
   return (
     <LegacyCard title="Apply to Products" sectioned>
-      <ChoiceList
-          choices={[
-            {label: "All products", value: "0"},
-            {label: "Specific products", value: "1"},
-            {label: "Product collections", value: "2"},
-            {label: "Product tags", value: "3"},
-          ]}
-          selected={selected}
-          onChange={handleSelectChange}
+      <FormLayout>
+        <RadioButton
+          label="All products"
+          id="00"
+          name="products"
+          checked={applyToProduct === "00"}
+          onChange={handleValueChange}
         />
+        <RadioButton
+          label="Specific products"
+          id="01"
+          name="products"
+          checked={applyToProduct === "01"}
+          onChange={handleValueChange}
+        />
+        {applyToProduct === "01" && <ProductResource />}
+        <RadioButton
+          label="Product collections"
+          id="02"
+          name="products"
+          checked={applyToProduct === "02"}
+          onChange={handleValueChange}
+        />
+        {applyToProduct === "02" && <CollectionResource />}
+        <RadioButton
+          label="Product tags"
+          id="03"
+          name="products"
+          checked={applyToProduct === "03"}
+          onChange={handleValueChange}
+        />
+        {applyToProduct === "03" && <ProductTagResource />}
+      </FormLayout>
     </LegacyCard>
   );
 }

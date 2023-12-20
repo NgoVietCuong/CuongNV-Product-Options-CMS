@@ -1,17 +1,26 @@
 import useSWR, { mutate } from "swr";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import styles from "../styles/Home.module.css";
 import { fetchData, updateData } from "@/utils/axiosRequest";
 import { Page, LegacyCard, Layout, FormLayout } from "@shopify/polaris";
 import { Text, Button, Switch, IconButton, Spinner } from "@chakra-ui/react";
 import { IoIosListBox, IoMdPricetags, IoMdCart } from "react-icons/io";
+import parseCookies from "@/utils/parseCookies";
 
-
-export default function Home({ jwt, shopId }) {
+export default function Home() {
   const router = useRouter();
+  const [jwt, setJwt] = useState(null);
+  const [shopId, setShopId] = useState(null);
+
+  useEffect(() => {
+    const cookies = parseCookies(document.cookie);
+    setJwt(cookies.jwtToken);
+    setShopId(cookies.shopId);
+  }, []);
+
   const { data, isLoading } = useSWR(
-    [`${process.env.NEXT_PUBLIC_SERVER_URL}/configs`, jwt],
+    (jwt && shopId) ? [`${process.env.NEXT_PUBLIC_SERVER_URL}/configs`, jwt] : null,
     fetchData,
     {
       revalidateOnFocus: false,
@@ -131,22 +140,4 @@ export default function Home({ jwt, shopId }) {
       )}
     </Page>
   );
-}
-
-export async function getServerSideProps(context) {
-  const { req } = context;
-  const jwt = req.cookies.jwtToken;
-  const shopId = req.cookies.shopId;
-
-  if (!jwt) {
-    res.writeHead(301, { Location: "/login.html" });
-    res.end();
-  }
-
-  return {
-    props: {
-      jwt,
-      shopId
-    }
-  }
 }

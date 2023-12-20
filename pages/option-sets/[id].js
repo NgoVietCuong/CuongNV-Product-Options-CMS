@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import useSWR from "swr";
+import { useRouter } from "next/router";
 import {
   Page,
   LegacyCard,
@@ -10,24 +10,83 @@ import {
 } from "@shopify/polaris";
 import CustomerForm from "@/components/Forms/CustomerForm";
 import ProductForm from "@/components/Forms/ProductForm";
-import OptionCard from "@/components/Options/OptionCard";
+import OptionForm from "@/components/Forms/OptionForm";
 import { fetchData } from "@/utils/axiosRequest";
+import parseCookies from "@/utils/parseCookies";
+import OptionSetContext from "@/context/OptionSetContext";
 
-export default function UpdateOptionSet({ jwt, shopId, products, collections, productTags, customers, customerTags }) {
-  console.log('products', products);
-  console.log('collections', collections);
-  console.log('productTags', productTags);
-  console.log('customers', customers);
-  console.log('customerTags', customerTags);
+export default function UpdateOptionSet() {
+  const router = useRouter();
 
+  const [jwt, setJwt] = useState(null);
+  const [shopId, setShopId] = useState(null);
+  const [initialProducts, setInitialProducts] = useState([]);
+  const [initialCollections, setInitialCollections] = useState([]);
+  const [initialProductTags, setInitialProductTags] = useState([]);
+  const [initialCustomers, setInitialCustomers] = useState([]);
+  const [initialCustomerTags, setInitialCustomerTags] = useState([]);
+  const [isDirty, setIsDirty] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
   const [name, setName] = useState("");
   const [priority, setPriority] = useState("0");
   const [status, setStatus] = useState("Enable");
-  const [isDirty, setIsDirty] = useState(false);
-  const [isFetching, setIsFetching] = useState(true);
   const [applyToCustomer, setApplyToCustomer] = useState("0");
-  const [customerIds, setCustomerIds] = useState([]);
-  const [applyToProduct, setApplyToProduct] = useState("0");
+  const [customers, setCustomers] = useState([]);
+  const [customerTags, setCustomerTags] = useState([]);
+  const [applyToProduct, setApplyToProduct] = useState("01");
+  const [products, setProducts] = useState([]);
+  const [collections, setCollections] = useState([]);
+  const [productTags, setProductTags] = useState([]);
+
+  const fetchInitialData = useCallback(async () => {
+    if (jwt && shopId) {
+      setIsFetching(true);
+      const fetchProducts = fetchData([`${process.env.NEXT_PUBLIC_SERVER_URL}/products/list`, jwt]);
+      const fetchCollections = fetchData([`${process.env.NEXT_PUBLIC_SERVER_URL}/products/collections`, jwt]);
+      const fetchProductTags = fetchData([`${process.env.NEXT_PUBLIC_SERVER_URL}/products/tags`, jwt]);
+      const fetchCustomers = fetchData([`${process.env.NEXT_PUBLIC_SERVER_URL}/customers/list`, jwt]);
+      const fetchCustomerTags = fetchData([`${process.env.NEXT_PUBLIC_SERVER_URL}/customers/tags`, jwt]);
+
+      const [productRes, collectionRes, productTagRes, customerRes, customerTagRes] = await Promise.all([
+        fetchProducts,
+        fetchCollections,
+        fetchProductTags,
+        fetchCustomers,
+        fetchCustomerTags
+      ]);
+
+      if (productRes && productRes.statusCode === 200) {
+        setInitialProducts(productRes.payload);
+      }
+
+      if (collectionRes && collectionRes.statusCode === 200) {
+        setInitialCollections(collectionRes.payload);
+      }
+
+      if (productTagRes && productTagRes.statusCode === 200) {
+        setInitialProductTags(productTagRes.payload);
+      }
+
+      if (customerRes && customerRes.statusCode === 200) {
+        setInitialCustomers(customerRes.payload);
+      }
+
+      if (customerTagRes && customerTagRes.statusCode === 200) {
+        setInitialCustomerTags(customerTagRes.payload);
+      }
+      setIsFetching(false);
+    }
+  }, [jwt, shopId]);
+
+  useEffect(() => {
+    const cookies = parseCookies(document.cookie);
+    setJwt(cookies.jwtToken);
+    setShopId(cookies.shopId);
+  }, []);
+
+  useEffect(() => {
+    fetchInitialData();
+  }, [fetchInitialData]);
 
   const options = [
     { label: "Enable", value: "enable" },
@@ -35,18 +94,24 @@ export default function UpdateOptionSet({ jwt, shopId, products, collections, pr
   ];
 
   const handleNameChange = useCallback(
-    (newName) => setName(newName),
-    []
+    (newName) => {
+      setName(newName);
+      setIsDirty(true);
+    }, []
   );
 
   const handlePriorityChange = useCallback(
-    (newPriority) => setPriority(newPriority),
-    []
+    (newPriority) => {
+      setPriority(newPriority);
+      setIsDirty(true);
+    }, []
   );
 
   const handleStatusChange = useCallback(
-    (newStatus) => setStatus(newStatus),
-    []
+    (newStatus) => {
+      setStatus(newStatus);
+      setIsDirty(true);
+    },[]
   );
 
   return (
@@ -87,72 +152,22 @@ export default function UpdateOptionSet({ jwt, shopId, products, collections, pr
         </FormLayout>
       </LegacyCard>
 
-      <CustomerForm />
-      <ProductForm />
-      <OptionCard />
+      <OptionSetContext.Provider value={{
+        applyToCustomer, setApplyToCustomer, 
+        customers, setCustomers, 
+        customerTags, setCustomerTags,
+        applyToProduct, setApplyToProduct,
+        products, setProducts,
+        collections, setCollections,
+        productTags, setProductTags,
+        setIsDirty, initialProducts,
+        initialCollections, initialProductTags,
+        initialCustomers, initialCustomerTags,
+      }}>
+        <CustomerForm />
+        <ProductForm />
+        <OptionForm />
+      </OptionSetContext.Provider>
     </Page>
   );
-}
-
-export async function getServerSideProps(context) {
-  const { req } = context;
-  const jwt = req.cookies.jwtToken;
-  const shopId = req.cookies.shopId;
-
-  if (!jwt) {
-    res.writeHead(301, { Location: "/login.html" });
-    res.end();
-  }
-
-  let products = [];
-  let collections = [];
-  let productTags = [];
-  let customers = [];
-  let customerTags = [];
-
-  const fetchProducts = fetchData([`${process.env.SERVER_URL}/products/list`, jwt]);
-  const fetchCollections = fetchData([`${process.env.SERVER_URL}/products/collections`, jwt]);
-  const fetchProductTags = fetchData([`${process.env.SERVER_URL}/products/tags`, jwt]);
-  const fetchCustomers = fetchData([`${process.env.SERVER_URL}/customers/list`, jwt]);
-  const fetchCustomerTags = fetchData([`${process.env.SERVER_URL}/customers/tags`, jwt]);
-
-  const [productRes, collectionRes, productTagRes, customerRes, customerTagRes] = await Promise.all([
-    fetchProducts,
-    fetchCollections,
-    fetchProductTags,
-    fetchCustomers,
-    fetchCustomerTags
-  ]);
-
-  if (productRes && productRes.statusCode === 200) {
-    products = productRes.payload;
-  }
-
-  if (collectionRes && collectionRes.statusCode === 200) {
-    collections = collectionRes.payload;
-  }
-
-  if (productTagRes && productTagRes.statusCode === 200) {
-    productTags = productTagRes.payload;
-  }
-
-  if (customerRes && customerRes.statusCode === 200) {
-    customers = customerRes.payload;
-  }
-
-  if (customerTagRes && customerTagRes.statusCode === 200) {
-    customerTags = customerTagRes.payload;
-  }
-
-  return {
-    props: {
-      jwt,
-      shopId,
-      products,
-      collections,
-      productTags,
-      customers,
-      customerTags
-    }
-  }
 }

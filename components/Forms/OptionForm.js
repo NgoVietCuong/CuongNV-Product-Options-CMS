@@ -1,8 +1,8 @@
 import { LegacyCard, FormLayout } from "@shopify/polaris";
 import { Button } from "@chakra-ui/react";
-import Option from "./Option";
+import Option from "../Options/Option";
 
-export default function OptionCard() {
+export default function OptionForm() {
   return (
     <LegacyCard title="Options" sectioned>
       <FormLayout>

@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
 
-* {
+*, button {
   font-family: Inter;
   font-size: 13px;
 }
@@ -24,14 +24,11 @@ h1, h2, h3, h4, h5, h6, p {
 }
 
 .Polaris-Select,
-.Polaris-TextField {
+.Polaris-TextField,
+.Polaris-Button {
   display: flex;
-  height: 34px;
+  height: 34px!important;
   align-items: center;
-}
-
-ul.Polaris-VerticalStack.Polaris-VerticalStack--listReset li:not(:first-child) {
-  margin-top: 1em;
 }
 
 .Polaris-LegacyCard.Polaris-LegacyCard--subdued {
@@ -75,6 +72,15 @@ ul.Polaris-VerticalStack.Polaris-VerticalStack--listReset li:not(:first-child) {
 
 .Polaris-Frame-Loading__Level {
   background-color: rgba(102, 153, 225, 1)!important;
+}
+
+/* Selected Items */
+div+.Polaris-Banner {
+  margin-top: 10px!important;
+}
+
+.Polaris-Banner .Polaris-Icon {
+  display: none!important;
 }
 
 /* Navigation */
