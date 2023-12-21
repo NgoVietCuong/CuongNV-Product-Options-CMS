@@ -1,5 +1,5 @@
 import { useState, useCallback, useContext } from "react";
-import { Banner, Modal, TextField, ResourceList, ResourceItem, Text, HorizontalStack, Scrollable } from "@shopify/polaris";
+import { Banner, EmptyState, Modal, TextField, ResourceList, ResourceItem, Text, HorizontalStack, Scrollable } from "@shopify/polaris";
 import { Button, Grid, GridItem } from "@chakra-ui/react";
 import OptionSetContext from "@/context/OptionSetContext";
 
@@ -17,6 +17,16 @@ export default function CustomerResource() {
     singular: "customer",
     plural: "customers"
   }
+
+  const emptyState = !searchCustomers.length ? (
+    <div className="po_resource_empty_state">
+      <EmptyState
+        image="https://cdn.shopify.com/shopifycloud/web/assets/v1/93a30c07e111eac4.svg"
+      >
+        <Text variant="bodyMd" fontWeight="medium" as="h2">Can't find customers</Text>
+      </EmptyState>
+    </div>
+  ) : undefined;
 
   const handleValueChange = useCallback(
     (value) => {
@@ -48,10 +58,10 @@ export default function CustomerResource() {
           <Banner status="info" onDismiss={() => handleDismissCustomers(item)}>
             <Grid w="100%" gridTemplateColumns="0.14fr 0.8fr" alignItems='center'>
               <GridItem>
-                <Text variant="bodyMd" as="h3">{itemData.displayName}</Text>
+                <Text variant="bodyMd" as="span">{itemData.displayName}</Text>
               </GridItem>
               <GridItem>
-                <Text variant="bodyMd" as="h3">{itemData.email}</Text>
+                <Text variant="bodyMd" as="span">{itemData.email}</Text>
               </GridItem>
             </Grid>
           </Banner>
@@ -66,10 +76,10 @@ export default function CustomerResource() {
       <ResourceItem id={id}>
         <Grid w="100%" gridTemplateColumns="0.3fr 0.7fr" alignItems='center'>
           <GridItem>
-            <Text variant="bodyMd" as="h3">{displayName}</Text>
+            <Text variant="bodyMd" as="span">{displayName}</Text>
           </GridItem>
           <GridItem>
-            <Text variant="bodyMd" as="h3">{email}</Text>
+            <Text variant="bodyMd" as="span">{email}</Text>
           </GridItem>
         </Grid>
       </ResourceItem>
@@ -101,6 +111,7 @@ export default function CustomerResource() {
           />
           <ResourceList
             resourceName={resourceName}
+            emptyState={emptyState}
             items={searchCustomers}
             renderItem={renderItem}
             selectedItems={selectedCustomers}

@@ -1,6 +1,7 @@
 import { useState, useCallback, useContext } from "react";
-import { Banner, Modal, TextField, ResourceList, ResourceItem, Text, Thumbnail, HorizontalStack, Scrollable } from "@shopify/polaris";
+import { Banner, EmptyState, Modal, TextField, ResourceList, ResourceItem, Text, Thumbnail, HorizontalStack, Scrollable } from "@shopify/polaris";
 import { Button } from "@chakra-ui/react";
+import { ImageMajor } from '@shopify/polaris-icons';
 import OptionSetContext from "@/context/OptionSetContext";
 
 export default function CollectionResource() {
@@ -10,12 +11,22 @@ export default function CollectionResource() {
   const [searchCollections, setSearchCollections] = useState(initialCollections);
   const [selectedCollections, setSelectedCollections] = useState([]);
 
-  console.log('collections', collections)
+  console.log('collections', initialCollections)
 
   const resourceName = {
     singular: "collection",
     plural: "collections"
   }
+
+  const emptyState = !searchCollections.length ? (
+    <div className="po_resource_empty_state">
+      <EmptyState
+        image="https://cdn.shopify.com/shopifycloud/web/assets/v1/0c8a43219c5c1a08.svg"
+      >
+        <Text variant="bodyMd" fontWeight="medium" as="h2">Can't find collections</Text>
+      </EmptyState>
+    </div>
+  ) : undefined;
 
   const handleValueChange = useCallback(
     (value) => {
@@ -53,8 +64,8 @@ export default function CollectionResource() {
         return (
           <Banner status="info" onDismiss={() => handleDismissCollections(item)}>
             <HorizontalStack blockAlign="center" gap="4">
-              <Thumbnail source={itemData.image.url} size="small" />
-              <Text variant="bodyMd" fontWeight="bold" as="h3">{itemData.title}</Text>
+              <Thumbnail source={itemData.image ? itemData.image.url : ImageMajor} size="small" />
+              <Text variant="bodyMd" as="span">{itemData.title}</Text>
             </HorizontalStack>
           </Banner>
         )
@@ -63,12 +74,12 @@ export default function CollectionResource() {
   }
 
   function renderItem(item, id) {
-    const {title, image: {url}} = item;
+    const {title, image} = item;
     return(
       <ResourceItem id={id}>
         <HorizontalStack blockAlign="center" gap="4">
-          <Thumbnail source={url} size="small" />
-          <Text variant="bodyMd" fontWeight="bold" as="h3">{title}</Text>
+          <Thumbnail source={image ? image.url : ImageMajor} size="small" />
+          <Text variant="bodyMd" as="span">{title}</Text>
         </HorizontalStack>
       </ResourceItem>
     )
@@ -99,6 +110,7 @@ export default function CollectionResource() {
           />
           <ResourceList
             resourceName={resourceName}
+            emptyState={emptyState}
             items={searchCollections}
             renderItem={renderItem}
             selectedItems={selectedCollections}

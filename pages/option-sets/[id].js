@@ -35,7 +35,7 @@ export default function UpdateOptionSet() {
   const [applyToCustomer, setApplyToCustomer] = useState("0");
   const [customers, setCustomers] = useState([]);
   const [customerTags, setCustomerTags] = useState([]);
-  const [applyToProduct, setApplyToProduct] = useState("01");
+  const [applyToProduct, setApplyToProduct] = useState("00");
   const [products, setProducts] = useState([]);
   const [collections, setCollections] = useState([]);
   const [productTags, setProductTags] = useState([]);

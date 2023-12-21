@@ -1,6 +1,7 @@
 import { useState, useCallback, useContext } from "react";
-import { Banner, Modal, TextField, ResourceList, ResourceItem, Text, Thumbnail, HorizontalStack, Scrollable } from "@shopify/polaris";
+import { Banner, EmptyState, Modal, TextField, ResourceList, ResourceItem, Text, Thumbnail, HorizontalStack, Scrollable } from "@shopify/polaris";
 import { Button } from "@chakra-ui/react";
+import { ImageMajor } from '@shopify/polaris-icons';
 import OptionSetContext from "@/context/OptionSetContext";
 
 export default function ProductResource() {
@@ -10,10 +11,22 @@ export default function ProductResource() {
   const [searchProducts, setSearchProducts] = useState(initialProducts);
   const [selectedProducts, setSelectedProducts] = useState([]);
 
+  console.log('init', initialProducts);
+
   const resourceName = {
     singular: "product",
     plural: "products"
   }
+
+  const emptyState = !searchProducts.length ? (
+    <div className="po_resource_empty_state">
+      <EmptyState
+        image="https://cdn.shopify.com/shopifycloud/web/assets/v1/c2c8e9c6226b6499.svg"
+      >
+        <Text variant="bodyMd" fontWeight="medium" as="h2">Can't find products</Text>
+      </EmptyState>
+    </div>
+  ) : undefined;
 
   const handleValueChange = useCallback(
     (value) => {
@@ -52,8 +65,8 @@ export default function ProductResource() {
         return (
           <Banner status="info" onDismiss={() => handleDismissProducts(item)}>
             <HorizontalStack blockAlign="center" gap="4">
-              <Thumbnail source={itemData.featuredImage.url} size="small" />
-              <Text variant="bodyMd" fontWeight="bold" as="h3">{itemData.title}</Text>
+              <Thumbnail source={itemData.featuredImage ? itemData.featuredImage.url : ImageMajor} size="small" />
+              <Text variant="bodyMd" as="span">{itemData.title}</Text>
             </HorizontalStack>
           </Banner>
         )
@@ -62,12 +75,12 @@ export default function ProductResource() {
   }
 
   function renderItem(item, id) {
-    const {title, featuredImage: {url}} = item;
+    const {title, featuredImage} = item;
     return (
       <ResourceItem id={id}>
         <HorizontalStack blockAlign="center" gap="4">
-          <Thumbnail source={url} size="small" />
-          <Text variant="bodyMd" as="h3">{title}</Text>
+          <Thumbnail source={featuredImage ? featuredImage.url : ImageMajor} size="small" />
+          <Text variant="bodyMd" as="span">{title}</Text>
         </HorizontalStack>
       </ResourceItem>
     )
@@ -98,6 +111,7 @@ export default function ProductResource() {
           />
           <ResourceList
             resourceName={resourceName}
+            emptyState={emptyState}
             items={searchProducts}
             renderItem={renderItem}
             selectedItems={selectedProducts}

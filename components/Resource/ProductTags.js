@@ -1,5 +1,5 @@
 import { useState, useCallback, useContext } from "react";
-import { Tag, Modal, TextField, ResourceList, ResourceItem, Text, HorizontalStack, Scrollable } from "@shopify/polaris";
+import { EmptyState, Tag, Modal, TextField, ResourceList, ResourceItem, Text, HorizontalStack, Scrollable } from "@shopify/polaris";
 import { Button } from "@chakra-ui/react";
 import OptionSetContext from "@/context/OptionSetContext";
 
@@ -7,7 +7,7 @@ export default function ProductTagResource() {
   const { initialProductTags, productTags, setProductTags, setIsDirty } = useContext(OptionSetContext);
   const [value, setValue] = useState("");
   const [open, setOpen] = useState(false);
-  const [searchTags, setSearchTags] = useState(initialProductTags);
+  const [searchTags, setSearchTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
 
   console.log('searchTags', productTags);
@@ -17,6 +17,16 @@ export default function ProductTagResource() {
     singular: "product tag",
     plural: "product tags"
   }
+
+  const emptyState = !searchTags.length ? (
+    <div className="po_resource_empty_state">
+      <EmptyState
+        image="https://cdn.shopify.com/shopifycloud/web/assets/v1/67d1bd2ad29c4adc.svg"
+      >
+        <Text variant="bodyMd" fontWeight="medium" as="h2">Can't find product tags</Text>
+      </EmptyState>
+    </div>
+  ) : undefined;
 
   const handleValueChange = useCallback(
     (value) => {
@@ -50,7 +60,7 @@ export default function ProductTagResource() {
   function renderItem(item) {
     return(
       <ResourceItem id={item}>
-        <Text variant="bodyMd" fontWeight="bold" as="h3">{item}</Text>
+        <Text variant="bodyMd" as="span">{item}</Text>
       </ResourceItem>
     )
   }
@@ -80,6 +90,7 @@ export default function ProductTagResource() {
           />
           <ResourceList
             resourceName={resourceName}
+            emptyState={emptyState}
             items={searchTags}
             renderItem={renderItem}
             selectedItems={selectedTags}
