@@ -75,24 +75,47 @@ h1, h2, h3, h4, h5, h6, p {
 }
 
 /* Scrollable */
-.Polaris-Scrollable {
-  /* margin-top: 5px!important; */
+.Polaris-FormLayout__Item > .Polaris-Scrollable {
+  margin-top: 0.5rem!important;
 }
 
 /* Selected Items Banner */
-.Polaris-FormLayout__Item > .Polaris-Banner.Polaris-Banner--statusInfo {
-  margin-top: 0.5rem!important;
+.po_banner_with_image > .Polaris-Banner.Polaris-Banner--statusInfo,
+.po_banner_without_image > .Polaris-Banner.Polaris-Banner--statusInfo,
+.Polaris-Scrollable > .Polaris-Banner.Polaris-Banner--statusInfo {
   background-color: #EDF2F7!important;
   border: none!important;
+}
+
+.po_banner_with_image > .Polaris-Banner.Polaris-Banner--statusInfo,
+.po_banner_without_image > .Polaris-Banner.Polaris-Banner--statusInfo {
+  margin-top: 0.5rem!important;
+}
+
+.Polaris-Scrollable > .po_banner_with_image > .Polaris-Banner.Polaris-Banner--statusInfo:first-child,
+.Polaris-Scrollable > .po_banner_without_image > .Polaris-Banner.Polaris-Banner--statusInfo:first-child {
+  margin-top: 0px!important;
 }
 
 .Polaris-Banner .Polaris-Icon.Polaris-Icon--colorHighlight.Polaris-Icon--applyColor {
   display: none!important;
 }
 
-.Polaris-Banner--withinContentContainer {
+.po_banner_with_image .Polaris-Banner--withinContentContainer {
   padding: 5px!important;
-  background-color: #A0AEC0;
+}
+
+.po_banner_without_image .Polaris-Banner--withinContentContainer {
+  padding: 10px!important;
+}
+
+.po_banner_without_image .Polaris-Button {
+  top: -5px;
+}
+
+/* Selected Item Tags */
+.chakra-button + .Polaris-HorizontalStack {
+  margin-top: 0.5rem!important;
 }
 
 /* Navigation */

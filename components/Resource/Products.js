@@ -7,10 +7,8 @@ export default function ProductResource() {
   const { initialProducts, products, setProducts, setIsDirty } = useContext(OptionSetContext);
   const [value, setValue] = useState("");
   const [open, setOpen] = useState(false);
-  const [selectedItems, setSelectedItems] = useState([]);
-  // console.log(initialProducts)
-
-  console.log("test", products)
+  const [searchProducts, setSearchProducts] = useState(initialProducts);
+  const [selectedProducts, setSelectedProducts] = useState([]);
 
   const resourceName = {
     singular: "product",
@@ -20,48 +18,56 @@ export default function ProductResource() {
   const handleValueChange = useCallback(
     (value) => {
       setValue(value);
-    }, []
+      const newSearchProducts = initialProducts.filter(product => product.title.toLowerCase().includes(value.toLowerCase()));
+      console.log('search products', newSearchProducts);
+      setSearchProducts(newSearchProducts);
+    }, [searchProducts]
   );
 
-  const handleToggleModal = useCallback(
-    () => setOpen((open) => !open)
-    , []
-  );
+  const handleToggleModal = useCallback(() => setOpen((open) => !open), []);
 
   const handleSelectProducts = useCallback(
     () => {
-      setProducts(selectedItems);
+      setProducts(selectedProducts);
       setOpen(false);
-    }, [selectedItems]
-  )
+      setIsDirty(true);
+    }, [selectedProducts]
+  );
 
-  function renderSelectedItems(items) {
+  const handleDismissProducts = useCallback(
+    (item) => {
+      const newSelectedProducts = [...selectedProducts];
+      const index = newSelectedProducts.indexOf(item);
+      newSelectedProducts.splice(index, 1);
+      setSelectedProducts(newSelectedProducts);
+      setProducts(newSelectedProducts);
+      setIsDirty(true);
+    }, [selectedProducts]
+  );
+
+  function renderSelectedProducts(items) {
     return (
       items.map(item => {
-        console.log('item', item);
         const itemData = initialProducts.find(product => product.id === item);
-        console.log("itemData", itemData)
         return (
-          <Banner status="info" onDismiss={() => {console.log("ahihi")}}>
+          <Banner status="info" onDismiss={() => handleDismissProducts(item)}>
             <HorizontalStack blockAlign="center" gap="4">
               <Thumbnail source={itemData.featuredImage.url} size="small" />
               <Text variant="bodyMd" fontWeight="bold" as="h3">{itemData.title}</Text>
             </HorizontalStack>
           </Banner>
         )
-        })
+      })
     )
   }
 
-  function renderItem(item) {
-    const {id, title, featuredImage: {url}} = item;
+  function renderItem(item, id) {
+    const {title, featuredImage: {url}} = item;
     return (
-      <ResourceItem
-        id={id}
-      >
+      <ResourceItem id={id}>
         <HorizontalStack blockAlign="center" gap="4">
           <Thumbnail source={url} size="small" />
-          <Text variant="bodyMd" fontWeight="bold" as="h3">{title}</Text>
+          <Text variant="bodyMd" as="h3">{title}</Text>
         </HorizontalStack>
       </ResourceItem>
     )
@@ -92,41 +98,33 @@ export default function ProductResource() {
           />
           <ResourceList
             resourceName={resourceName}
-            items={initialProducts}
+            items={searchProducts}
             renderItem={renderItem}
-            selectedItems={selectedItems}
-            onSelectionChange={setSelectedItems}
+            selectedItems={selectedProducts}
+            onSelectionChange={setSelectedProducts}
             selectable
           />
         </Modal.Section>
       </Modal>
-      <TextField
-        value={value}
-        placeholder="Search products"
-        onChange={handleValueChange}
-        connectedRight={
-          <Button 
-            size="md" 
-            fontSize="sm" 
-            variant="outline" 
-            borderColor="#353535" 
-            color="#353535" 
-            fontWeight="500" 
-            height="34px"
-            onClick={handleToggleModal}
-          >Browse</Button>
-        }
-      />
+      <Button 
+        size="md" 
+        fontSize="xs" 
+        borderColor="#353535" 
+        color="#353535" 
+        height="34px"
+        onClick={handleToggleModal}
+      >Browse products</Button>
       {products.length > 4 ? (
-        <Scrollable style={{height: '200px'}} horizontal={false} focusable>
-          {renderSelectedItems(products)}
+        <Scrollable style={{height: '230px'}} horizontal={false} focusable>
+          <div className="po_banner_with_image">
+            {renderSelectedProducts(products)}
+          </div>
         </Scrollable>      
       ) : (
-        <>
-          {renderSelectedItems(products)}
-        </>
+        <div className="po_banner_with_image">
+          {renderSelectedProducts(products)}
+        </div>
       ) }
-
     </>
   )
 }

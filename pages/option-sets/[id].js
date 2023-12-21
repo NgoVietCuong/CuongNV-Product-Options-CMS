@@ -3,17 +3,19 @@ import { useRouter } from "next/router";
 import {
   Page,
   LegacyCard,
+  Layout,
   TextField,
   Select,
   FormLayout,
   ContextualSaveBar
 } from "@shopify/polaris";
-import CustomerForm from "@/components/Forms/CustomerForm";
-import ProductForm from "@/components/Forms/ProductForm";
-import OptionForm from "@/components/Forms/OptionForm";
+import { Spinner } from "@chakra-ui/react";
 import { fetchData } from "@/utils/axiosRequest";
 import parseCookies from "@/utils/parseCookies";
 import OptionSetContext from "@/context/OptionSetContext";
+import CustomerForm from "@/components/Forms/CustomerForm";
+import ProductForm from "@/components/Forms/ProductForm";
+import OptionForm from "@/components/Forms/OptionForm";
 
 export default function UpdateOptionSet() {
   const router = useRouter();
@@ -116,58 +118,66 @@ export default function UpdateOptionSet() {
 
   return (
     <Page title="Create Option Set">
-      <LegacyCard title="General Information" sectioned>
-        {isDirty && <ContextualSaveBar
-          message="Unsaved changes"
-          saveAction={{
-            onAction: () => console.log('add form submit logic'),
-            loading: false,
-            disabled: false,
-          }}
-          discardAction={{
-            onAction: () => console.log('add clear form logic'),
-          }}
-        />}
-        <FormLayout>
-          <TextField
-            label="Option set name"
-            value={name}
-            onChange={handleNameChange}
-            autoComplete="off"
-          />
-          <TextField
-            label="Priority"
-            type="number"
-            value={priority}
-            onChange={handlePriorityChange}
-            helpText="0 is the highest priority. When there are two Option Sets set for the same products/customers, the one with higher priority will be applied."
-            autoComplete="off"
-          />
-          <Select
-            label="Status"
-            options={options}
-            onChange={handleStatusChange}
-            value={status}
-          />
-        </FormLayout>
-      </LegacyCard>
+      {isFetching ? (
+        <Layout>
+          <Spinner top="10px" color='blue.500' size='md' />
+        </Layout>
+      ) : (
+        <>
+          <LegacyCard title="General Information" sectioned>
+            {isDirty && <ContextualSaveBar
+              message="Unsaved changes"
+              saveAction={{
+                onAction: () => console.log('add form submit logic'),
+                loading: false,
+                disabled: false,
+              }}
+              discardAction={{
+                onAction: () => console.log('add clear form logic'),
+              }}
+            />}
+            <FormLayout>
+              <TextField
+                label="Option set name"
+                value={name}
+                onChange={handleNameChange}
+                autoComplete="off"
+              />
+              <TextField
+                label="Priority"
+                type="number"
+                value={priority}
+                onChange={handlePriorityChange}
+                helpText="0 is the highest priority. When there are two Option Sets set for the same products/customers, the one with higher priority will be applied."
+                autoComplete="off"
+              />
+              <Select
+                label="Status"
+                options={options}
+                onChange={handleStatusChange}
+                value={status}
+              />
+            </FormLayout>
+          </LegacyCard>
 
-      <OptionSetContext.Provider value={{
-        applyToCustomer, setApplyToCustomer, 
-        customers, setCustomers, 
-        customerTags, setCustomerTags,
-        applyToProduct, setApplyToProduct,
-        products, setProducts,
-        collections, setCollections,
-        productTags, setProductTags,
-        setIsDirty, initialProducts,
-        initialCollections, initialProductTags,
-        initialCustomers, initialCustomerTags,
-      }}>
-        <CustomerForm />
-        <ProductForm />
-        <OptionForm />
-      </OptionSetContext.Provider>
+          <OptionSetContext.Provider value={{
+            applyToCustomer, setApplyToCustomer, 
+            customers, setCustomers, 
+            customerTags, setCustomerTags,
+            applyToProduct, setApplyToProduct,
+            products, setProducts,
+            collections, setCollections,
+            productTags, setProductTags,
+            setIsDirty, initialProducts,
+            initialCollections, initialProductTags,
+            initialCustomers, initialCustomerTags,
+          }}>
+            <CustomerForm />
+            <ProductForm />
+            <OptionForm />
+          </OptionSetContext.Provider>
+        </>
+      )}
     </Page>
   );
 }

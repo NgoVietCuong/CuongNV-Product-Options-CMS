@@ -99,16 +99,16 @@ export default function OptionSets() {
         accessibilityLabel={`View details for ${name}`}
         persistActions
       >
-        <Grid w='100%' gridTemplateColumns="1fr 0.7fr 1.1fr 1.1fr 0.6fr" alignItems='center'>
-          <GridItem >
+        <Grid w="100%" gridTemplateColumns="1fr 0.7fr 1.1fr 1.1fr 0.6fr" alignItems='center'>
+          <GridItem>
             <Text variant="bodyMd" fontWeight="bold" as="h3">
               {name}
             </Text>
           </GridItem>
-          <GridItem >
+          <GridItem>
             <Badge status="info" progress="complete">Enable</Badge>
           </GridItem>
-          <GridItem >
+          <GridItem>
             <VerticalStack gap="1px">
               <Text variant="bodySm" as="h6" color="subdued">
                 Created at
@@ -118,7 +118,7 @@ export default function OptionSets() {
               </Text>
             </VerticalStack>
           </GridItem>
-          <GridItem >
+          <GridItem>
             <VerticalStack>
               <Text variant="bodySm" as="h6" color="subdued">
                 Updated at
