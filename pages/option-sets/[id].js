@@ -43,18 +43,12 @@ export default function UpdateOptionSet() {
   const fetchInitialData = useCallback(async () => {
     if (jwt && shopId) {
       setIsFetching(true);
-      const fetchProducts = fetchData([`${process.env.NEXT_PUBLIC_SERVER_URL}/products/list`, jwt]);
-      const fetchCollections = fetchData([`${process.env.NEXT_PUBLIC_SERVER_URL}/products/collections`, jwt]);
-      const fetchProductTags = fetchData([`${process.env.NEXT_PUBLIC_SERVER_URL}/products/tags`, jwt]);
-      const fetchCustomers = fetchData([`${process.env.NEXT_PUBLIC_SERVER_URL}/customers/list`, jwt]);
-      const fetchCustomerTags = fetchData([`${process.env.NEXT_PUBLIC_SERVER_URL}/customers/tags`, jwt]);
-
-      const [productRes, collectionRes, productTagRes, customerRes, customerTagRes] = await Promise.all([
-        fetchProducts,
-        fetchCollections,
-        fetchProductTags,
-        fetchCustomers,
-        fetchCustomerTags
+      const productRes = await fetchData([`${process.env.NEXT_PUBLIC_SERVER_URL}/products/list`, jwt]);
+      const [collectionRes, productTagRes, customerRes, customerTagRes] = await Promise.all([
+        fetchData([`${process.env.NEXT_PUBLIC_SERVER_URL}/products/collections`, jwt]),
+        fetchData([`${process.env.NEXT_PUBLIC_SERVER_URL}/products/tags`, jwt]),
+        fetchData([`${process.env.NEXT_PUBLIC_SERVER_URL}/customers/list`, jwt]),
+        fetchData([`${process.env.NEXT_PUBLIC_SERVER_URL}/customers/tags`, jwt])
       ]);
 
       if (productRes && productRes.statusCode === 200) {

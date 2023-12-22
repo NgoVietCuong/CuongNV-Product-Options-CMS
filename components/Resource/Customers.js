@@ -10,9 +10,6 @@ export default function CustomerResource() {
   const [searchCustomers, setSearchCustomers] = useState(initialCustomers);
   const [selectedCustomers, setSelectedCustomers] = useState([]);
 
-  console.log('seletedCustomers', selectedCustomers);
-  console.log('customers', customers);
-
   const resourceName = {
     singular: "customer",
     plural: "customers"
@@ -31,22 +28,40 @@ export default function CustomerResource() {
   const handleValueChange = useCallback(
     (value) => {
       setValue(value);
-    }, []
+      const newSearchCustomers = initialCustomers.filter(customer => customer.displayName.toLowerCase().includes(value.toLowerCase()) || customer.email.toLowerCase().includes(value.toLowerCase()));
+      setSearchCustomers(newSearchCustomers);
+    }, [searchCustomers]
   );
 
   const handleToggleModal = useCallback(() => setOpen((open) => !open), []);
 
+  const handleCancelSelect = useCallback(
+    () => {
+      setValue("");
+      setOpen(false);
+      setSelectedCustomers(customers);
+      setSearchCustomers(initialCustomers);
+    }, [selectedCustomers]
+  )
+
   const handleSelectCustomers = useCallback(
     () => {
-      setCustomers(selectedCustomers);
+      setValue("")
       setOpen(false);
       setIsDirty(true);
+      setCustomers(selectedCustomers);
+      setSearchCustomers(initialCustomers);
     }, [selectedCustomers]
   );
 
   const handleDismissCustomers = useCallback(
     (item) => {
-
+      const newSelectedCustomers = [...selectedCustomers];
+      const index = newSelectedCustomers.indexOf(item);
+      newSelectedCustomers.splice(index, 1);
+      setIsDirty(true);
+      setCustomers(newSelectedCustomers);
+      setSelectedCustomers(newSelectedCustomers);
     }, [selectedCustomers]
   )
 
@@ -73,7 +88,7 @@ export default function CustomerResource() {
   function renderItem(item, id) {
     const {displayName, email} = item;
     return(
-      <ResourceItem id={id}>
+      <ResourceItem id={id} key={id}>
         <Grid w="100%" gridTemplateColumns="0.3fr 0.7fr" alignItems='center'>
           <GridItem>
             <Text variant="bodyMd" as="span">{displayName}</Text>
@@ -90,7 +105,7 @@ export default function CustomerResource() {
     <>
       <Modal
         open={open}
-        onClose={handleToggleModal}
+        onClose={handleCancelSelect}
         title="Select customers"
         primaryAction={{
           content: "Select",
@@ -99,7 +114,7 @@ export default function CustomerResource() {
         secondaryActions={[
           {
             content: 'Cancel',
-            onAction: handleToggleModal,
+            onAction: handleCancelSelect,
           },
         ]}
       >

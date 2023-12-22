@@ -28,18 +28,29 @@ export default function CustomerTagResource() {
   const handleValueChange = useCallback(
     (value) => {
       setValue(value);
-      const newSearchTags = initialCustomerTags.filter(tag => tag.title.toLowerCase().includes(value.toLowerCase()));
+      const newSearchTags = initialCustomerTags.filter(tag => tag.id.toLowerCase().includes(value.toLowerCase()));
       setSearchTags(newSearchTags);
     }, [searchTags]
   );
 
   const handleToggleModal = useCallback(() => setOpen((open) => !open), []);
 
+  const handleCancelSelect = useCallback(
+    () => {
+      setValue("");
+      setOpen(false);
+      setSelectedTags(customerTags);
+      setSearchTags(initialCustomerTags);
+    }, [selectedTags]
+  );
+
   const handleSelectTags = useCallback(
     () => {
-      setCustomerTags(selectedTags);
+      setValue("");
       setOpen(false);
       setIsDirty(true);
+      setCustomerTags(selectedTags);
+      setSearchTags(initialCustomerTags);
     }, [selectedTags]
   );
 
@@ -48,25 +59,25 @@ export default function CustomerTagResource() {
       const newSelectedTags = [...selectedTags];
       const index = newSelectedTags.indexOf(tag);
       newSelectedTags.splice(index, 1);
+      setIsDirty(true);
       setSelectedTags(newSelectedTags);
       setCustomerTags(newSelectedTags);
-      setIsDirty(true);
     }, [selectedTags]
-  )
+  );
 
-  function renderItem(item) {
-    return(
-      <ResourceItem id={item}>
-        <Text variant="bodyMd" as="span">{item}</Text>
+  function renderItem(item, id) {
+    return (
+      <ResourceItem id={id} key={id}>
+        <Text variant="bodyMd" as="span">{id}</Text>
       </ResourceItem>
     )
   }
-  
+
   return (
     <>
       <Modal
         open={open}
-        onClose={handleToggleModal}
+        onClose={handleCancelSelect}
         title="Select product tags"
         primaryAction={{
           content: "Select",
@@ -75,7 +86,7 @@ export default function CustomerTagResource() {
         secondaryActions={[
           {
             content: 'Cancel',
-            onAction: handleToggleModal,
+            onAction: handleCancelSelect,
           },
         ]}
       >
@@ -83,7 +94,7 @@ export default function CustomerTagResource() {
           <TextField
             value={value}
             placeholder="Search tags"
-            onChange={handleValueChange} 
+            onChange={handleValueChange}
           />
           <ResourceList
             resourceName={resourceName}
@@ -96,11 +107,11 @@ export default function CustomerTagResource() {
           />
         </Modal.Section>
       </Modal>
-      <Button 
-        size="md" 
-        fontSize="xs" 
-        borderColor="#353535" 
-        color="#353535" 
+      <Button
+        size="md"
+        fontSize="xs"
+        borderColor="#353535"
+        color="#353535"
         height="34px"
         onClick={handleToggleModal}
       >Browse customer tags</Button>

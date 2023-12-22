@@ -11,8 +11,6 @@ export default function CollectionResource() {
   const [searchCollections, setSearchCollections] = useState(initialCollections);
   const [selectedCollections, setSelectedCollections] = useState([]);
 
-  console.log('collections', initialCollections)
-
   const resourceName = {
     singular: "collection",
     plural: "collections"
@@ -38,11 +36,22 @@ export default function CollectionResource() {
 
   const handleToggleModal = useCallback(() => setOpen((open) => !open), []);
 
+  const handleCancelSelect = useCallback(
+    () => {
+      setValue("");
+      setOpen(false);
+      setSelectedCollections(collections);
+      setSearchCollections(initialCollections);
+    }, [selectedCollections]
+  );
+
   const handleSelectCollections = useCallback(
     () => {
-      setCollections(selectedCollections);
+      setValue("");
       setOpen(false);
       setIsDirty(true);
+      setCollections(selectedCollections);
+      setSearchCollections(initialCollections);
     }, [selectedCollections]
   );
 
@@ -51,9 +60,9 @@ export default function CollectionResource() {
       const newSelectedCollections = [...selectedCollections];
       const index = newSelectedCollections.indexOf(item);
       newSelectedCollections.splice(index, 1);
-      setSelectedCollections(newSelectedCollections);
-      setCollections(newSelectedCollections);
       setIsDirty(true);
+      setCollections(newSelectedCollections);
+      setSelectedCollections(newSelectedCollections);
     }, [selectedCollections]
   )
 
@@ -76,7 +85,7 @@ export default function CollectionResource() {
   function renderItem(item, id) {
     const {title, image} = item;
     return(
-      <ResourceItem id={id}>
+      <ResourceItem id={id} key={id}>
         <HorizontalStack blockAlign="center" gap="4">
           <Thumbnail source={image ? image.url : ImageMajor} size="small" />
           <Text variant="bodyMd" as="span">{title}</Text>
@@ -89,7 +98,7 @@ export default function CollectionResource() {
     <>
       <Modal
         open={open}
-        onClose={handleToggleModal}
+        onClose={handleCancelSelect}
         title="Select collections"
         primaryAction={{
           content: "Select",
@@ -98,7 +107,7 @@ export default function CollectionResource() {
         secondaryActions={[
           {
             content: 'Cancel',
-            onAction: handleToggleModal,
+            onAction: handleCancelSelect,
           },
         ]}
       >

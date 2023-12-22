@@ -11,8 +11,6 @@ export default function ProductResource() {
   const [searchProducts, setSearchProducts] = useState(initialProducts);
   const [selectedProducts, setSelectedProducts] = useState([]);
 
-  console.log('init', initialProducts);
-
   const resourceName = {
     singular: "product",
     plural: "products"
@@ -32,18 +30,28 @@ export default function ProductResource() {
     (value) => {
       setValue(value);
       const newSearchProducts = initialProducts.filter(product => product.title.toLowerCase().includes(value.toLowerCase()));
-      console.log('search products', newSearchProducts);
       setSearchProducts(newSearchProducts);
     }, [searchProducts]
   );
 
   const handleToggleModal = useCallback(() => setOpen((open) => !open), []);
 
+  const handleCancelSelect = useCallback(
+    () => {
+      setValue("");
+      setOpen(false);
+      setSelectedProducts(products);
+      setSearchProducts(initialProducts);
+    }, [selectedProducts]
+  );
+
   const handleSelectProducts = useCallback(
     () => {
-      setProducts(selectedProducts);
+      setValue("");
       setOpen(false);
       setIsDirty(true);
+      setProducts(selectedProducts);
+      setSearchProducts(initialProducts);
     }, [selectedProducts]
   );
 
@@ -52,9 +60,9 @@ export default function ProductResource() {
       const newSelectedProducts = [...selectedProducts];
       const index = newSelectedProducts.indexOf(item);
       newSelectedProducts.splice(index, 1);
-      setSelectedProducts(newSelectedProducts);
-      setProducts(newSelectedProducts);
       setIsDirty(true);
+      setProducts(newSelectedProducts);
+      setSelectedProducts(newSelectedProducts);
     }, [selectedProducts]
   );
 
@@ -77,7 +85,7 @@ export default function ProductResource() {
   function renderItem(item, id) {
     const {title, featuredImage} = item;
     return (
-      <ResourceItem id={id}>
+      <ResourceItem id={id} key={id}>
         <HorizontalStack blockAlign="center" gap="4">
           <Thumbnail source={featuredImage ? featuredImage.url : ImageMajor} size="small" />
           <Text variant="bodyMd" as="span">{title}</Text>
@@ -90,7 +98,7 @@ export default function ProductResource() {
     <>
       <Modal
         open={open}
-        onClose={handleToggleModal}
+        onClose={handleCancelSelect}
         title="Select products"
         primaryAction={{
           content: "Select",
@@ -99,7 +107,7 @@ export default function ProductResource() {
         secondaryActions={[
           {
             content: 'Cancel',
-            onAction: handleToggleModal,
+            onAction: handleCancelSelect,
           },
         ]}
       >

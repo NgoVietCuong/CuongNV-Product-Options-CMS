@@ -7,11 +7,8 @@ export default function ProductTagResource() {
   const { initialProductTags, productTags, setProductTags, setIsDirty } = useContext(OptionSetContext);
   const [value, setValue] = useState("");
   const [open, setOpen] = useState(false);
-  const [searchTags, setSearchTags] = useState([]);
+  const [searchTags, setSearchTags] = useState(initialProductTags);
   const [selectedTags, setSelectedTags] = useState([]);
-
-  console.log('searchTags', productTags);
-  console.log('selectedTags', selectedTags)
 
   const resourceName = {
     singular: "product tag",
@@ -31,18 +28,29 @@ export default function ProductTagResource() {
   const handleValueChange = useCallback(
     (value) => {
       setValue(value);
-      const newSearchTags = initialProductTags.filter(tag => tag.title.toLowerCase().includes(value.toLowerCase()));
+      const newSearchTags = initialProductTags.filter(tag => tag.id.toLowerCase().includes(value.toLowerCase()));
       setSearchTags(newSearchTags);
     }, [searchTags]
   );
 
   const handleToggleModal = useCallback(() => setOpen((open) => !open), []);
 
+  const handleCancelSelect = useCallback(
+    () => {
+      setValue("");
+      setOpen(false);
+      setSelectedTags(productTags);
+      setSearchTags(initialProductTags);
+    }, [selectedTags]
+  );
+
   const handleSelectTags = useCallback(
     () => {
-      setProductTags(selectedTags);
+      setValue("");
       setOpen(false);
       setIsDirty(true);
+      setProductTags(selectedTags);
+      setSearchTags(initialProductTags);
     }, [selectedTags]
   );
 
@@ -57,10 +65,10 @@ export default function ProductTagResource() {
     }, [selectedTags]
   )
 
-  function renderItem(item) {
+  function renderItem(item, id) {
     return(
-      <ResourceItem id={item}>
-        <Text variant="bodyMd" as="span">{item}</Text>
+      <ResourceItem id={id} key={id}>
+        <Text variant="bodyMd" as="span">{id}</Text>
       </ResourceItem>
     )
   }
@@ -69,7 +77,7 @@ export default function ProductTagResource() {
     <>
       <Modal
         open={open}
-        onClose={handleToggleModal}
+        onClose={handleCancelSelect}
         title="Select product tags"
         primaryAction={{
           content: "Select",
@@ -78,7 +86,7 @@ export default function ProductTagResource() {
         secondaryActions={[
           {
             content: 'Cancel',
-            onAction: handleToggleModal,
+            onAction: handleCancelSelect,
           },
         ]}
       >
