@@ -1,6 +1,6 @@
 import { useState, useCallback, useContext } from "react";
 import { Banner, EmptyState, Modal, TextField, ResourceList, ResourceItem, Text, Thumbnail, HorizontalStack, Scrollable } from "@shopify/polaris";
-import { Button } from "@chakra-ui/react";
+import { Box, Button } from "@chakra-ui/react";
 import { ImageMajor } from '@shopify/polaris-icons';
 import OptionSetContext from "@/context/OptionSetContext";
 
@@ -17,13 +17,13 @@ export default function ProductResource() {
   }
 
   const emptyState = !searchProducts.length ? (
-    <div className="po_resource_empty_state">
+    <Box className="po_resource_empty_state">
       <EmptyState
         image="https://cdn.shopify.com/shopifycloud/web/assets/v1/c2c8e9c6226b6499.svg"
       >
         <Text variant="bodyMd" fontWeight="medium" as="h2">Can't find products</Text>
       </EmptyState>
-    </div>
+    </Box>
   ) : undefined;
 
   const handleValueChange = useCallback(
@@ -138,14 +138,14 @@ export default function ProductResource() {
       >Browse products</Button>
       {products.length > 4 ? (
         <Scrollable style={{height: '230px'}} horizontal={false} focusable>
-          <div className="po_banner_with_image">
+          <Box className="po_banner_with_image">
             {renderSelectedProducts(products)}
-          </div>
+          </Box>
         </Scrollable>      
       ) : (
-        <div className="po_banner_with_image">
+        <Box className="po_banner_with_image">
           {renderSelectedProducts(products)}
-        </div>
+        </Box>
       ) }
     </>
   )

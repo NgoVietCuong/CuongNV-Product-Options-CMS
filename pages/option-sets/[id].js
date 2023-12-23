@@ -16,6 +16,7 @@ import OptionSetContext from "@/context/OptionSetContext";
 import CustomerForm from "@/components/Forms/CustomerForm";
 import ProductForm from "@/components/Forms/ProductForm";
 import OptionForm from "@/components/Forms/OptionForm";
+import { initialOption } from "@/utils/constants";
 
 export default function UpdateOptionSet() {
   const router = useRouter();
@@ -39,6 +40,7 @@ export default function UpdateOptionSet() {
   const [products, setProducts] = useState([]);
   const [collections, setCollections] = useState([]);
   const [productTags, setProductTags] = useState([]);
+  const [options, setOptions] = useState([initialOption]);
 
   const fetchInitialData = useCallback(async () => {
     if (jwt && shopId) {
@@ -84,7 +86,7 @@ export default function UpdateOptionSet() {
     fetchInitialData();
   }, [fetchInitialData]);
 
-  const options = [
+  const statusOptions = [
     { label: "Enable", value: "enable" },
     { label: "Disabled", value: "disable" },
   ];
@@ -107,7 +109,7 @@ export default function UpdateOptionSet() {
     (newStatus) => {
       setStatus(newStatus);
       setIsDirty(true);
-    },[]
+    }, []
   );
 
   return (
@@ -147,7 +149,7 @@ export default function UpdateOptionSet() {
               />
               <Select
                 label="Status"
-                options={options}
+                options={statusOptions}
                 onChange={handleStatusChange}
                 value={status}
               />
@@ -162,6 +164,7 @@ export default function UpdateOptionSet() {
             products, setProducts,
             collections, setCollections,
             productTags, setProductTags,
+            options, setOptions,
             setIsDirty, initialProducts,
             initialCollections, initialProductTags,
             initialCustomers, initialCustomerTags,

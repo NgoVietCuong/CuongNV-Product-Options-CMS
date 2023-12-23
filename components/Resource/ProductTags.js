@@ -1,6 +1,6 @@
 import { useState, useCallback, useContext } from "react";
 import { EmptyState, Tag, Modal, TextField, ResourceList, ResourceItem, Text, HorizontalStack, Scrollable } from "@shopify/polaris";
-import { Button } from "@chakra-ui/react";
+import { Box, Button } from "@chakra-ui/react";
 import OptionSetContext from "@/context/OptionSetContext";
 
 export default function ProductTagResource() {
@@ -16,13 +16,13 @@ export default function ProductTagResource() {
   }
 
   const emptyState = !searchTags.length ? (
-    <div className="po_resource_empty_state">
+    <Box className="po_resource_empty_state">
       <EmptyState
         image="https://cdn.shopify.com/shopifycloud/web/assets/v1/67d1bd2ad29c4adc.svg"
       >
         <Text variant="bodyMd" fontWeight="medium" as="h2">Can't find product tags</Text>
       </EmptyState>
-    </div>
+    </Box>
   ) : undefined;
 
   const handleValueChange = useCallback(

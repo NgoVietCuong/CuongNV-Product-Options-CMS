@@ -1,6 +1,6 @@
 import { useState, useCallback, useContext } from "react";
 import { Banner, EmptyState, Modal, TextField, ResourceList, ResourceItem, Text, HorizontalStack, Scrollable } from "@shopify/polaris";
-import { Button, Grid, GridItem } from "@chakra-ui/react";
+import { Box, Button, Grid, GridItem } from "@chakra-ui/react";
 import OptionSetContext from "@/context/OptionSetContext";
 
 export default function CustomerResource() {
@@ -16,13 +16,13 @@ export default function CustomerResource() {
   }
 
   const emptyState = !searchCustomers.length ? (
-    <div className="po_resource_empty_state">
+    <Box className="po_resource_empty_state">
       <EmptyState
         image="https://cdn.shopify.com/shopifycloud/web/assets/v1/93a30c07e111eac4.svg"
       >
         <Text variant="bodyMd" fontWeight="medium" as="h2">Can't find customers</Text>
       </EmptyState>
-    </div>
+    </Box>
   ) : undefined;
 
   const handleValueChange = useCallback(
@@ -145,14 +145,14 @@ export default function CustomerResource() {
       >Browse customers</Button>
       {customers.length > 4 ? (
         <Scrollable style={{height: '190px'}} horizontal={false} focusable>
-          <div className="po_banner_without_image">
+          <Box className="po_banner_without_image">
             {renderSelectedCustomers(customers)}
-          </div>
+          </Box>
         </Scrollable>      
       ) : (
-        <div className="po_banner_without_image">
+        <Box className="po_banner_without_image">
           {renderSelectedCustomers(customers)}
-        </div>
+        </Box>
       )}
     </>
   )
