@@ -1,4 +1,4 @@
-import { useCallback, useContext } from "react";
+import { useContext } from "react";
 import { 
   LegacyCard,
   TextField,
@@ -17,25 +17,21 @@ import { optionTypes } from "@/utils/constants";
 export default function Option({ option, index }) {
   const { options, setOptions, setIsDirty } = useContext(OptionSetContext);
 
-  const handleLabelChange = useCallback(
-    (value) => {
-      option.label = value;
-      const newOptions = [...options];
-      newOptions[index] = option;
-      setOptions(newOptions);
-      setIsDirty(true);
-    }, [options]
-  );
+  const handleLabelChange = (value) => {
+    option.label = value;
+    const newOptions = [...options];
+    newOptions[index] = option;
+    setOptions(newOptions);
+    setIsDirty(true);
+  }
 
-  const handleTypeChange = useCallback(
-    (value) => {
-      option.type = value;
-      const newOptions = [...options];
-      newOptions[index] = option;
-      setOptions(newOptions);
-      setIsDirty(true);
-    }, [options]
-  );
+  const handleTypeChange = (value) => {
+    option.type = value;
+    const newOptions = [...options];
+    newOptions[index] = option;
+    setOptions(newOptions);
+    setIsDirty(true);
+  }
 
   return (
     <>

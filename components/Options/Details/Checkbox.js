@@ -1,4 +1,4 @@
-import { useCallback, useContext } from "react";
+import { useContext } from "react";
 import { VerticalStack, Layout, TextField, Text } from "@shopify/polaris";
 import { Button, ButtonGroup, IconButton, Tooltip } from "@chakra-ui/react";
 import { IoDuplicate, IoTrashBin } from "react-icons/io5";
@@ -7,71 +7,65 @@ import OptionSetContext from "@/context/OptionSetContext";
 export default function CheckboxDetail({ option, index }) {
   const { options, setOptions, setIsDirty } = useContext(OptionSetContext);
 
-  const handleAddValue = useCallback(
-    () => {
-      option.checkbox.push({
-        optionValue: null,
-        priceAddOn: null
-      });
-      const newOptions = [...options];
-      newOptions[index] = option;
-      setOptions(newOptions);
-      setIsDirty(true);
-    }, [options]
-  );
+  const handleAddValue = () => {
+    option.checkbox.push({
+      optionValue: "",
+      priceAddOn: ""
+    });
+    const newOptions = [...options];
+    newOptions[index] = option;
+    setOptions(newOptions);
+    setIsDirty(true);
+  }
 
-  const handleDuplicateValue = useCallback(
-    (itemIndex) => {
-      const detail = {...option.checkbox[itemIndex]};
-      option.checkbox.splice(itemIndex + 1, 0, detail);
-      const newOptions = [...options];
-      newOptions[index] = option;
-      setOptions(newOptions);
-      setIsDirty(true);
-    }, [options]
-  );
+  const handleDuplicateValue = (itemIndex) => {
+    const detail = {...option.checkbox[itemIndex]};
+    option.checkbox.splice(itemIndex + 1, 0, detail);
+    const newOptions = [...options];
+    newOptions[index] = option;
+    setOptions(newOptions);
+    setIsDirty(true);
+  }
 
-  const handleDeleteValue = useCallback(
-    (itemIndex) => {
-      option.checkbox.splice(itemIndex, 1);
-      const newOptions = [...options];
-      newOptions[index] = option;
-      setOptions(newOptions);
-      setIsDirty(true);
-    }, [options]
-  );
+  const handleDeleteValue = (itemIndex) => {
+    option.checkbox.splice(itemIndex, 1);
+    const newOptions = [...options];
+    newOptions[index] = option;
+    setOptions(newOptions);
+    setIsDirty(true);
+  }
 
-  const handleValueChange = useCallback(
-    (itemIndex, value) => {
-      option.checkbox[itemIndex].optionValue = value;
-      const newOptions = [...options];
-      newOptions[index] = option;
-      setOptions(newOptions);
-      setIsDirty(true);
-    }, [options]
-  );
+  const handleValueChange = (itemIndex, value) => {
+    const detailArray = [...option.checkbox];
+    detailArray[itemIndex] = {...option.checkbox[itemIndex], optionValue: value};
+    option.checkbox = detailArray;
+    const newOptions = [...options];
+    newOptions[index] = option;
+    setOptions(newOptions);
+    setIsDirty(true);
+  }
 
-  const handlePriceChange = useCallback(
-    (itemIndex, value) => {
-      const numberValue = parseFloat(value);
-      option.checkbox[itemIndex].priceAddOn = numberValue < 0 ? "0" : value;
-      const newOptions = [...options];
-      newOptions[index] = option;
-      setOptions(newOptions);
-      setIsDirty(true);
-    }, [options]
-  );
+  const handlePriceChange = (itemIndex, value) => {
+    const numberValue = parseFloat(value);
+    const detailArray = [...option.checkbox];
+    detailArray[itemIndex] = {...option.checkbox[itemIndex], priceAddOn: numberValue < 0 ? "0" : value};
+    option.checkbox = detailArray;
+    const newOptions = [...options];
+    newOptions[index] = option;
+    setOptions(newOptions);
+    setIsDirty(true);
+  }
 
-  const handlePriceRound = useCallback(
-    (itemIndex, event) => {
-      const numberValue = parseFloat(event.target.value);
-      option.checkbox[itemIndex].priceAddOn = numberValue.toFixed(2);
-      const newOptions = [...options];
-      newOptions[index] = option;
-      setOptions(newOptions);
-      setIsDirty(true);
-    }, [options]
-  )
+  const handlePriceRound = (itemIndex, event) => {
+    const numberValue = parseFloat(event.target.value);
+    const detailArray = [...option.checkbox];
+    detailArray[itemIndex] = {...option.checkbox[itemIndex], priceAddOn: numberValue.toFixed(2)};
+    option.checkbox = detailArray;
+    const newOptions = [...options];
+    newOptions[index] = option;
+    setOptions(newOptions);
+    setIsDirty(true);
+  }
 
   return (
     <VerticalStack gap="3">

@@ -1,4 +1,4 @@
-import { useState, useCallback, useContext } from "react";
+import { useState, useContext } from "react";
 import { Collapsible, LegacyCard, FormLayout, HorizontalStack, Text, Box } from "@shopify/polaris";
 import { Button, ButtonGroup, IconButton, Tooltip } from "@chakra-ui/react";
 import { IoDuplicate, IoTrashBin } from "react-icons/io5";
@@ -13,66 +13,56 @@ export default function OptionForm() {
   const { options, setOptions, setIsDirty } = useContext(OptionSetContext);
   const [opens, setOpens] = useState(Array(options.length).fill(false));
 
-  const handleToggle = useCallback(
-    (index) => {
-      const newOpens = [...opens];
-      newOpens[index] = !opens[index];
-      setOpens(newOpens);
-      setIsDirty(true);
-    }, [opens]
-  );
+  const handleToggle = (index) => {
+    const newOpens = [...opens];
+    newOpens[index] = !opens[index];
+    setOpens(newOpens);
+    setIsDirty(true);
+  }
 
-  const handleAddOption = useCallback(
-    () => {
-      const newOpens = [...opens];
-      newOpens.push(false);
-      const newOptions = [...options];
-      newOptions.push(initialOption);
-      setIsDirty(true);
-      setOpens(newOpens);
-      setOptions(newOptions);
-    }, [opens, options]
-  );
+  const handleAddOption = () => {
+    const newOpens = [...opens];
+    newOpens.push(false);
+    const newOptions = [...options];
+    newOptions.push({...initialOption});
+    setIsDirty(true);
+    setOpens(newOpens);
+    setOptions(newOptions);
+  }
 
-  const handleDuplicateOption = useCallback(
-    (index) => {
-      const newOpens = [...opens];
-      newOpens.splice(index + 1, 0, false);
-      const newOptions = [...options];
-      const option = {...newOptions[index]};
-      newOptions.splice(index + 1, 0, option);
-      setIsDirty(true);
-      setOpens(newOpens);
-      setOptions(newOptions);
-    }, [opens, options]
-  );
+  const handleDuplicateOption = (index) => {
+    const newOpens = [...opens];
+    newOpens.splice(index + 1, 0, false);
+    const newOptions = [...options];
+    const option = {...newOptions[index]};
+    newOptions.splice(index + 1, 0, option);
+    setIsDirty(true);
+    setOpens(newOpens);
+    setOptions(newOptions);
+  }
 
-  const handleDeleteOption = useCallback(
-    (index) => {
-      const newOpens = [...opens];
-      newOpens.splice(index, 1)
-      const newOptions = [...options];
-      newOptions.splice(index, 1);
-      setIsDirty(true);
-      setOpens(newOpens);
-      setOptions(newOptions);
-    }, [opens, options]
-  );
+  const handleDeleteOption = (index) => {
+    const newOpens = [...opens];
+    newOpens.splice(index, 1)
+    const newOptions = [...options];
+    newOptions.splice(index, 1);
+    setIsDirty(true);
+    setOpens(newOpens);
+    setOptions(newOptions);
+  }
 
-  const handleOnDragEnd = useCallback(
-    (result) => {
-      if (!result.destination) return;
-      const newOpens = [...opens];
-      const [reOrderOpen] = newOpens.splice(result.source.index, 1);
-      newOpens.splice(result.destination.index, 0, reOrderOpen);
-      const newOptions = [...options];
-      const [reorderedOption] = newOptions.splice(result.source.index, 1);
-      newOptions.splice(result.destination.index, 0, reorderedOption);
-      setIsDirty(true);
-      setOpens(newOpens);
-      setOptions(newOptions);
-    }, [opens, options]
-  );
+  const handleOnDragEnd = (result) => {
+    if (!result.destination) return;
+    const newOpens = [...opens];
+    const [reOrderOpen] = newOpens.splice(result.source.index, 1);
+    newOpens.splice(result.destination.index, 0, reOrderOpen);
+    const newOptions = [...options];
+    const [reorderedOption] = newOptions.splice(result.source.index, 1);
+    newOptions.splice(result.destination.index, 0, reorderedOption);
+    setIsDirty(true);
+    setOpens(newOpens);
+    setOptions(newOptions);
+  }
 
   return (
     <LegacyCard title="Options" sectioned>
@@ -146,9 +136,8 @@ export default function OptionForm() {
                             </LegacyCard.Section>
                             <Collapsible
                               open={opens[index]}
-                              id="basic-collapsible"
+                              id={`id-${index}`}
                               transition={{duration: '500ms', timingFunction: 'ease-in-out'}}
-                              expandOnPrint
                             >
                               <Option option={option} index={index} />
                             </Collapsible>

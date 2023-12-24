@@ -2,22 +2,22 @@ export const initialOption = {
   label: "",
   type: "0",
   textBox: {
-    priceAddOn: null
+    priceAddOn: ""
   },
   numberField: {
-    priceAddOn: null
+    priceAddOn: ""
   },
   checkbox: [{
-    optionValue: null,
-    priceAddOn: null
+    optionValue: "",
+    priceAddOn: ""
   }],
   radioButton: [{
-    optionValue: null,
-    priceAddOn: null
+    optionValue: "",
+    priceAddOn: ""
   }],
   dropdownMenu: [{
-    optionValue: null,
-    priceAddOn: null
+    optionValue: "",
+    priceAddOn: ""
   }],
   swatch: [{
     swatchType: "0",
@@ -25,8 +25,8 @@ export const initialOption = {
     priceAddOn: null
   }],
   button: [{
-    optionValue: null,
-    priceAddOn: null
+    optionValue: "",
+    priceAddOn: ""
   }] 
 }
 

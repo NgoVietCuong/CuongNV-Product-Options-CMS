@@ -1,4 +1,4 @@
-import { useCallback, useContext } from "react";
+import { useContext } from "react";
 import { VerticalStack, Layout, TextField, Text } from "@shopify/polaris";
 import { Button, ButtonGroup, IconButton, Tooltip } from "@chakra-ui/react";
 import { IoDuplicate, IoTrashBin } from "react-icons/io5";
@@ -7,71 +7,65 @@ import OptionSetContext from "@/context/OptionSetContext";
 export default function RadioButtonDetail({ option, index }) {
   const { options, setOptions, setIsDirty } = useContext(OptionSetContext);
 
-  const handleAddValue = useCallback(
-    () => {
-      option.radioButton.push({
-        optionValue: null,
-        priceAddOn: null
-      });
-      const newOptions = [...options];
-      newOptions[index] = option;
-      setOptions(newOptions);
-      setIsDirty(true);
-    }, [options]
-  );
+  const handleAddValue = () => {
+    option.radioButton.push({
+      optionValue: "",
+      priceAddOn: ""
+    });
+    const newOptions = [...options];
+    newOptions[index] = option;
+    setOptions(newOptions);
+    setIsDirty(true);
+  }
 
-  const handleDuplicateValue = useCallback(
-    (itemIndex) => {
-      const detail = {...option.radioButton[itemIndex]};
-      option.radioButton.splice(itemIndex + 1, 0, detail);
-      const newOptions = [...options];
-      newOptions[index] = option;
-      setOptions(newOptions);
-      setIsDirty(true);
-    }, [options]
-  );
+  const handleDuplicateValue = (itemIndex) => {
+    const detail = {...option.radioButton[itemIndex]};
+    option.radioButton.splice(itemIndex + 1, 0, detail);
+    const newOptions = [...options];
+    newOptions[index] = option;
+    setOptions(newOptions);
+    setIsDirty(true);
+  }
 
-  const handleDeleteValue = useCallback(
-    (itemIndex) => {
-      option.radioButton.splice(itemIndex, 1);
-      const newOptions = [...options];
-      newOptions[index] = option;
-      setOptions(newOptions);
-      setIsDirty(true);
-    }, [options]
-  );
+  const handleDeleteValue = (itemIndex) => {
+    option.radioButton.splice(itemIndex, 1);
+    const newOptions = [...options];
+    newOptions[index] = option;
+    setOptions(newOptions);
+    setIsDirty(true);
+  }
 
-  const handleValueChange = useCallback(
-    (itemIndex, value) => {
-      option.radioButton[itemIndex].optionValue = value;
-      const newOptions = [...options];
-      newOptions[index] = option;
-      setOptions(newOptions);
-      setIsDirty(true);
-    }, [options]
-  );
+  const handleValueChange = (itemIndex, value) => {
+    const detailArray = [...option.radioButton];
+    detailArray[itemIndex] = {...option.radioButton[itemIndex], optionValue: value};
+    option.radioButton = detailArray;
+    const newOptions = [...options];
+    newOptions[index] = option;
+    setOptions(newOptions);
+    setIsDirty(true);
+  }
 
-  const handlePriceChange = useCallback(
-    (itemIndex, value) => {
-      const numberValue = parseFloat(value);
-      option.radioButton[itemIndex].priceAddOn = numberValue < 0 ? "0" : value;
-      const newOptions = [...options];
-      newOptions[index] = option;
-      setOptions(newOptions);
-      setIsDirty(true);
-    }, [options]
-  );
+  const handlePriceChange = (itemIndex, value) => {
+    const numberValue = parseFloat(value);
+    const detailArray = [...option.radioButton];
+    detailArray[itemIndex] = {...option.radioButton[itemIndex], priceAddOn: numberValue < 0 ? "0" : value};
+    option.radioButton = detailArray;
+    const newOptions = [...options];
+    newOptions[index] = option;
+    setOptions(newOptions);
+    setIsDirty(true);
+  }
 
-  const handlePriceRound = useCallback(
-    (itemIndex, event) => {
-      const numberValue = parseFloat(event.target.value);
-      option.radioButton[itemIndex].priceAddOn = numberValue.toFixed(2);
-      const newOptions = [...options];
-      newOptions[index] = option;
-      setOptions(newOptions);
-      setIsDirty(true);
-    }, [options]
-  )
+  const handlePriceRound = (itemIndex, event) => {
+    const numberValue = parseFloat(event.target.value);
+    const detailArray = [...option.radioButton];
+    detailArray[itemIndex] = {...option.radioButton[itemIndex], priceAddOn: numberValue.toFixed(2)};
+    option.radioButton = detailArray;
+    const newOptions = [...options];
+    newOptions[index] = option;
+    setOptions(newOptions);
+    setIsDirty(true);
+  }
 
   return (
     <VerticalStack gap="3">

@@ -40,7 +40,7 @@ export default function UpdateOptionSet() {
   const [products, setProducts] = useState([]);
   const [collections, setCollections] = useState([]);
   const [productTags, setProductTags] = useState([]);
-  const [options, setOptions] = useState([initialOption]);
+  const [options, setOptions] = useState([{...initialOption}]);
 
   const fetchInitialData = useCallback(async () => {
     if (jwt && shopId) {
@@ -91,26 +91,20 @@ export default function UpdateOptionSet() {
     { label: "Disabled", value: "disable" },
   ];
 
-  const handleNameChange = useCallback(
-    (newName) => {
-      setName(newName);
-      setIsDirty(true);
-    }, []
-  );
+  const handleNameChange =(newName) => {
+    setName(newName);
+    setIsDirty(true);
+  }
 
-  const handlePriorityChange = useCallback(
-    (newPriority) => {
-      setPriority(newPriority);
-      setIsDirty(true);
-    }, []
-  );
+  const handlePriorityChange = (newPriority) => {
+    setPriority(newPriority);
+    setIsDirty(true);
+  }
 
-  const handleStatusChange = useCallback(
-    (newStatus) => {
-      setStatus(newStatus);
-      setIsDirty(true);
-    }, []
-  );
+  const handleStatusChange = (newStatus) => {
+    setStatus(newStatus);
+    setIsDirty(true);
+  }
 
   return (
     <Page title="Create Option Set">

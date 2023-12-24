@@ -1,31 +1,27 @@
-import { useCallback, useContext } from "react";
+import { useContext } from "react";
 import { VerticalStack, Layout, TextField, Text } from "@shopify/polaris";
 import OptionSetContext from "@/context/OptionSetContext";
 
 export default function NumberFieldDetail({ option, index }) {
   const { options, setOptions, setIsDirty } = useContext(OptionSetContext);
 
-  const handlePriceChange = useCallback(
-    (value) => {
-      const numberValue = parseFloat(value);
-      option.numberField.priceAddOn = numberValue < 0 ? "0" : value;
-      const newOptions = [...options];
-      newOptions[index] = option;
-      setOptions(newOptions);
-      setIsDirty(true);
-    }, [options]
-  );
+  const handlePriceChange = (value) => {
+    const numberValue = parseFloat(value);
+    option.numberField = { priceAddOn: numberValue < 0 ? "0" : value };
+    const newOptions = [...options];
+    newOptions[index] = option;
+    setOptions(newOptions);
+    setIsDirty(true);
+  }
   
-  const handlePriceRound = useCallback(
-    (event) => {
-      const numberValue = parseFloat(event.target.value);
-      option.numberField.priceAddOn = numberValue.toFixed(2);
-      const newOptions = [...options];
-      newOptions[index] = option;
-      setOptions(newOptions);
-      setIsDirty(true);
-    }, [options]
-  )
+  const handlePriceRound = (event) => {
+    const numberValue = parseFloat(event.target.value);
+    option.numberField = { priceAddOn: numberValue.toFixed(2) };
+    const newOptions = [...options];
+    newOptions[index] = option;
+    setOptions(newOptions);
+    setIsDirty(true);
+  }
 
   return (
     <VerticalStack gap="3">

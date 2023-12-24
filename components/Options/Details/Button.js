@@ -1,4 +1,4 @@
-import { useCallback, useContext } from "react";
+import { useContext } from "react";
 import { VerticalStack, Layout, TextField, Text } from "@shopify/polaris";
 import { Button, ButtonGroup, IconButton, Tooltip } from "@chakra-ui/react";
 import { IoDuplicate, IoTrashBin } from "react-icons/io5";
@@ -7,71 +7,65 @@ import OptionSetContext from "@/context/OptionSetContext";
 export default function ButtonDetail({ option, index }) {
   const { options, setOptions, setIsDirty } = useContext(OptionSetContext);
 
-  const handleAddValue = useCallback(
-    () => {
-      option.button.push({
-        optionValue: null,
-        priceAddOn: null
-      });
-      const newOptions = [...options];
-      newOptions[index] = option;
-      setOptions(newOptions);
-      setIsDirty(true);
-    }, [options]
-  );
+  const handleAddValue = () => {
+    option.button.push({
+      optionValue: "",
+      priceAddOn: ""
+    });
+    const newOptions = [...options];
+    newOptions[index] = option;
+    setOptions(newOptions);
+    setIsDirty(true);
+  }
 
-  const handleDuplicateValue = useCallback(
-    (itemIndex) => {
-      const detail = {...option.button[itemIndex]};
-      option.button.splice(itemIndex + 1, 0, detail);
-      const newOptions = [...options];
-      newOptions[index] = option;
-      setOptions(newOptions);
-      setIsDirty(true);
-    }, [options]
-  );
+  const handleDuplicateValue = (itemIndex) => {
+    const detail = {...option.button[itemIndex]};
+    option.button.splice(itemIndex + 1, 0, detail);
+    const newOptions = [...options];
+    newOptions[index] = option;
+    setOptions(newOptions);
+    setIsDirty(true);
+  }
 
-  const handleDeleteValue = useCallback(
-    (itemIndex) => {
-      option.button.splice(itemIndex, 1);
-      const newOptions = [...options];
-      newOptions[index] = option;
-      setOptions(newOptions);
-      setIsDirty(true);
-    }, [options]
-  );
+  const handleDeleteValue = (itemIndex) => {
+    option.button.splice(itemIndex, 1);
+    const newOptions = [...options];
+    newOptions[index] = option;
+    setOptions(newOptions);
+    setIsDirty(true);
+  }
 
-  const handleValueChange = useCallback(
-    (itemIndex, value) => {
-      option.button[itemIndex].optionValue = value;
-      const newOptions = [...options];
-      newOptions[index] = option;
-      setOptions(newOptions);
-      setIsDirty(true);
-    }, [options]
-  );
+  const handleValueChange = (itemIndex, value) => {
+    const detailArray = [...option.button];
+    detailArray[itemIndex] = {...option.button[itemIndex], optionValue: value};
+    option.button = detailArray;
+    const newOptions = [...options];
+    newOptions[index] = option;
+    setOptions(newOptions);
+    setIsDirty(true);
+  }
 
-  const handlePriceChange = useCallback(
-    (itemIndex, value) => {
-      const numberValue = parseFloat(value);
-      option.button[itemIndex].priceAddOn = numberValue < 0 ? "0" : value;
-      const newOptions = [...options];
-      newOptions[index] = option;
-      setOptions(newOptions);
-      setIsDirty(true);
-    }, [options]
-  );
+  const handlePriceChange = (itemIndex, value) => {
+    const numberValue = parseFloat(value);
+    const detailArray = [...option.button];
+    detailArray[itemIndex] = {...option.button[itemIndex], priceAddOn: numberValue < 0 ? "0" : value};
+    option.button = detailArray;
+    const newOptions = [...options];
+    newOptions[index] = option;
+    setOptions(newOptions);
+    setIsDirty(true);
+  }
 
-  const handlePriceRound = useCallback(
-    (itemIndex, event) => {
-      const numberValue = parseFloat(event.target.value);
-      option.button[itemIndex].priceAddOn = numberValue.toFixed(2);
-      const newOptions = [...options];
-      newOptions[index] = option;
-      setOptions(newOptions);
-      setIsDirty(true);
-    }, [options]
-  )
+  const handlePriceRound = (itemIndex, event) => {
+    const numberValue = parseFloat(event.target.value);
+    const detailArray = [...option.button];
+    detailArray[itemIndex] = {...option.button[itemIndex], priceAddOn: numberValue.toFixed(2)};
+    option.button = detailArray;
+    const newOptions = [...options];
+    newOptions[index] = option;
+    setOptions(newOptions);
+    setIsDirty(true);
+  }
 
   return (
     <VerticalStack gap="3">
