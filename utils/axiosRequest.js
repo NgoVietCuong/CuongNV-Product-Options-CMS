@@ -14,6 +14,21 @@ export async function fetchData(props) {
   return res.data;
 }
 
+export async function createData(props) {
+  const [url, jwt, data] = props;
+  const res = await axios({
+    url: url,
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`
+    },
+    data: data
+  });
+
+  return res.data;
+}
+
 export async function updateData(props) {
   const [url, jwt, data] = props;
   const res = await axios({

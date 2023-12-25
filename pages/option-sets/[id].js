@@ -10,13 +10,13 @@ import {
   ContextualSaveBar
 } from "@shopify/polaris";
 import { Spinner, useToast } from "@chakra-ui/react";
-import { fetchData } from "@/utils/axiosRequest";
+import { fetchData, createData, updateData } from "@/utils/axiosRequest";
+import { initialOption, initialOptionError } from "@/utils/constants";
 import parseCookies from "@/utils/parseCookies";
 import OptionSetContext from "@/context/OptionSetContext";
 import CustomerForm from "@/components/Forms/CustomerForm";
 import ProductForm from "@/components/Forms/ProductForm";
 import OptionForm from "@/components/Forms/OptionForm";
-import { initialOption, initialOptionError } from "@/utils/constants";
 
 export default function UpdateOptionSet() {
   const router = useRouter();
@@ -30,10 +30,11 @@ export default function UpdateOptionSet() {
   const [initialCustomers, setInitialCustomers] = useState([]);
   const [initialCustomerTags, setInitialCustomerTags] = useState([]);
   const [isDirty, setIsDirty] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
   const [name, setName] = useState("");
   const [priority, setPriority] = useState("0");
-  const [status, setStatus] = useState("Enable");
+  const [status, setStatus] = useState(true);
   const [applyToCustomer, setApplyToCustomer] = useState("0");
   const [customers, setCustomers] = useState([]);
   const [customerTags, setCustomerTags] = useState([]);
@@ -44,7 +45,7 @@ export default function UpdateOptionSet() {
   const [options, setOptions] = useState([{...initialOption}]);
   const [activeError, setActiveError] = useState(false);
   const [optionErrors, setOptionErrors] = useState([{...initialOptionError}]);
-
+  
   const fetchInitialData = useCallback(async () => {
     if (jwt && shopId) {
       setIsFetching(true);
@@ -90,8 +91,8 @@ export default function UpdateOptionSet() {
   }, [fetchInitialData]);
 
   const statusOptions = [
-    { label: "Enable", value: "enable" },
-    { label: "Disabled", value: "disable" },
+    { label: "Enable", value: true },
+    { label: "Disabled", value: false },
   ];
 
   const handleNameChange =(newName) => {
@@ -109,19 +110,18 @@ export default function UpdateOptionSet() {
     setIsDirty(true);
   }
 
-  const handleSaveOptionSet = () => {
+  const handleSaveOptionSet = async () => {
     let errorFields = 0;
     if (!name.trim()) {
       errorFields += 1;
-      setActiveError(true);
     }
 
     if (!priority.trim()) {
       errorFields += 1;
-      setActiveError(true);
     }
 
     options.forEach((option, index) => {
+      errorFields += optionErrors[index].label;
       if (option.type === "2") {
         errorFields += optionErrors[index].dropdownMenu.filter(error => error).length;
       } else if (option.type === "3") {
@@ -133,7 +133,9 @@ export default function UpdateOptionSet() {
       }
     });
 
+    console.log('test', errorFields)
     if (errorFields) {
+      setActiveError(true);
       toast({
         title: "Failed to save option set",
         description: `Please fill in ${errorFields} required fields to save successfully`,
@@ -142,6 +144,30 @@ export default function UpdateOptionSet() {
         duration: 2000
       });
       return;
+    }
+
+    setActiveError(false);
+    setIsSaving(true);
+    const data = {
+      shopId: shopId,
+      name: name,
+      priority: parseInt(priority),
+      status: status,
+      applyToCustomer: parseInt(applyToCustomer),
+      customerIds: customers.map(customer => parseInt(customer)),
+      customerTags: customerTags,
+      applyToProduct: parseInt(applyToProduct),
+      productIds: products.map(product => parseInt(product)),
+      productCollections: collections.map(collection => parseInt(collection)),
+      productTags: productTags,
+      options: options
+    }
+
+    const saveOptionSet = await createData([`${process.env.NEXT_PUBLIC_SERVER_URL}/option-sets`, jwt, data]);
+    setIsSaving(false);
+
+    if (saveOptionSet && saveOptionSet.statusCode === 201) {
+      router.push("/option-sets");
     }
   }
 
@@ -162,8 +188,8 @@ export default function UpdateOptionSet() {
               message="Unsaved changes"
               saveAction={{
                 onAction: handleSaveOptionSet,
-                loading: false,
-                disabled: false,
+                loading: isSaving,
+                disabled: isSaving,
               }}
               discardAction={{
                 onAction: handleDiscardChange,

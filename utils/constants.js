@@ -1,6 +1,6 @@
 export const initialOption = {
   label: "",
-  type: "4",
+  type: "0",
   textBox: {
     priceAddOn: ""
   },

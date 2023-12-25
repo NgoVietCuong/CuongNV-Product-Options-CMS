@@ -1,4 +1,5 @@
-import { useState, useCallback, useEffect } from "react";
+import useSWR from "swr";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import {
   Filters,
@@ -8,52 +9,56 @@ import {
   ResourceItem,
   Text,
   Badge,
+  Layout,
   VerticalStack
 } from "@shopify/polaris";
-import { Button, Grid, GridItem } from "@chakra-ui/react";
+import { Button, Grid, GridItem, Spinner} from "@chakra-ui/react";
 import parseCookies from "@/utils/parseCookies";
+import { fetchData } from "@/utils/axiosRequest";
+import formatMongoDateTime from "@/utils/formatTime";
 
 export default function OptionSets() {
   const router = useRouter();
+  const [jwt, setJwt] = useState(null);
+  const [shopId, setShopId] = useState(null);
+  const [optionSets, setOptionSets] = useState([]);
+  const [searchOptionSets, setSearchOptionSets] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
-  const [sortValue, setSortValue] = useState("DATE_MODIFIED_DESC");
+  const [sortValue, setSortValue] = useState("DATE_UPDATED_DESC");
   const [queryValue, setQueryValue] = useState(undefined);
 
-  const handleQueryValueChange = useCallback(
-    (value) => setQueryValue(value),
-    []
+  useEffect(() => {
+    const cookies = parseCookies(document.cookie);
+    setJwt(cookies.jwtToken);
+    setShopId(cookies.shopId);
+  }, []);
+
+  const { data, isLoading } = useSWR(
+    (jwt && shopId) ? [`${process.env.NEXT_PUBLIC_SERVER_URL}/option-sets`, jwt] : null,
+    fetchData,
+    {
+      revalidateOnFocus: false,
+      shouldRetryOnError: false
+    }
   );
 
-  const handleQueryValueRemove = useCallback(
-    () => setQueryValue(undefined),
-    []
-  );
-  
-  const handleClearAll = useCallback(() => {
-    handleQueryValueRemove();
-  }, [handleQueryValueRemove]);
+  useEffect(() => {
+    if (data && data.statusCode === 200) {
+      setOptionSets(data.payload);
+      setSearchOptionSets(data.payload);
+    }
+  }, [data]);
+
+  const handleQueryValueChange = (value) => {
+    setQueryValue(value);
+    const newSearchOptionSets = optionSets.filter(item => item.name.toLowerCase().includes(value.toLowerCase()));
+    setSearchOptionSets(newSearchOptionSets);
+  }
 
   const resourceName = {
     singular: "option set",
     plural: "option sets",
   };
-
-  const items = [
-    {
-      id: "1",
-      url: "/option-sets/1",
-      name: "Option set 1",
-      location: "Decatur, USA",
-      latestOrderUrl: "orders/1456",
-    },
-    {
-      id: "2",
-      url: "/option-sets/2",
-      name: "Option set 2",
-      location: "Los Angeles, USA",
-      latestOrderUrl: "orders/1457",
-    },
-  ];
 
   const bulkActions = [
     {
@@ -79,8 +84,6 @@ export default function OptionSets() {
       queryValue={queryValue}
       filters={[]}
       onQueryChange={handleQueryValueChange}
-      onQueryClear={handleQueryValueRemove}
-      onClearAll={handleClearAll}
     >
       {/* <div style={{ paddingLeft: "8px" }}>
         <Button size="sm" h="34px" variant="outline" colorScheme="gray" onClick={() => router.push("/option-sets/create")}>
@@ -91,11 +94,22 @@ export default function OptionSets() {
   );
 
   function renderItem(item) {
-    const { id, url, name } = item;
+    const { _id, name, status, applyToProduct, productIds, productCollections, productTags, createdAt, updatedAt } = item;
+    let applyTo = "";
+
+    if (applyToProduct === 0) {
+      applyTo = "All products"
+    } else if (applyToProduct === 1) {
+      applyTo = productIds.length > 1 ? `${productIds.length} products` : `${productIds.length} product` 
+    } else if (applyToProduct === 2) {
+      applyTo = productCollections.length > 1 ? `${productCollections.length} collections` : `${productCollections.length} collection` 
+    } else if (applyToProduct === 3) {
+      applyTo = productTags.length > 1 ? `${productTags.length} tags` : `${productTags.length} tag` 
+    }
+
     return (
       <ResourceItem
-        id={id}
-        url={url}
+        id={_id}
         accessibilityLabel={`View details for ${name}`}
         persistActions
       >
@@ -106,7 +120,7 @@ export default function OptionSets() {
             </Text>
           </GridItem>
           <GridItem>
-            <Badge status="info" progress="complete">Enable</Badge>
+            <Badge status={status ? "info": "new"} progress={status ? "complete": "partiallyComplete"}>{status ? "Enable" : "Disable"}</Badge>
           </GridItem>
           <GridItem>
             <VerticalStack gap="1px">
@@ -114,7 +128,7 @@ export default function OptionSets() {
                 Created at
               </Text>
               <Text variant="bodyMd" as="h6">
-                20/10/2023, 11:32:43 PM
+                {formatMongoDateTime(createdAt)}
               </Text>
             </VerticalStack>
           </GridItem>
@@ -124,7 +138,7 @@ export default function OptionSets() {
                 Updated at
               </Text>
               <Text variant="bodyMd" as="h6">
-                20/10/2023, 11:32:43 PM
+              {formatMongoDateTime(updatedAt)}
               </Text>
             </VerticalStack>
           </GridItem>
@@ -133,7 +147,7 @@ export default function OptionSets() {
               Apply to
             </Text>
             <Text variant="bodyMd" as="h6">
-              All products
+              {applyTo}
             </Text>
           </GridItem>
         </Grid>
@@ -150,26 +164,53 @@ export default function OptionSets() {
         </Button>
       }
     >
-      <LegacyCard>
-        <ResourceList
-          resourceName={resourceName}
-          items={items}
-          renderItem={renderItem}
-          selectedItems={selectedItems}
-          onSelectionChange={setSelectedItems}
-          bulkActions={bulkActions}
-          sortValue={sortValue}
-          sortOptions={[
-            { label: "Newest updated", value: "DATE_MODIFIED_DESC" },
-            { label: "Oldest updated", value: "DATE_MODIFIED_ASC" },
-          ]}
-          onSortChange={(selected) => {
-            setSortValue(selected);
-            console.log(`Sort option changed to ${selected}.`);
-          }}
-          filterControl={filterControl}
-        />
-      </LegacyCard>
+      {isLoading ? (
+        <Layout>
+          <Spinner top="10px" color='blue.500' size='md' />
+        </Layout>
+      ) : (
+        <LegacyCard>
+          <ResourceList
+            resourceName={resourceName}
+            items={searchOptionSets}
+            renderItem={renderItem}
+            selectedItems={selectedItems}
+            onSelectionChange={setSelectedItems}
+            bulkActions={bulkActions}
+            sortValue={sortValue}
+            sortOptions={[
+              { label: "Newest updated", value: "DATE_UPDATED_DESC" },
+              { label: "Oldest updated", value: "DATE_UPDATED_ASC" },
+            ]}
+            onSortChange={(selected) => {
+              setSortValue(selected);
+              const newOptionSets = [...optionSets];
+              const newSearchOptionSets = [...searchOptionSets];
+              newOptionSets.sort((first, second) => {
+                let firstDate = new Date(first.updatedAt);
+                let secondDate = new Date(second.updatedAt);
+                if (selected === "DATE_UPDATED_DESC") {
+                  return secondDate - firstDate;
+                } else {
+                  return firstDate - secondDate;
+                }
+              });
+              newSearchOptionSets.sort((first, second) => {
+                let firstDate = new Date(first.updatedAt);
+                let secondDate = new Date(second.updatedAt);
+                if (selected === "DATE_UPDATED_DESC") {
+                  return secondDate - firstDate;
+                } else {
+                  return firstDate - secondDate;
+                }
+              });
+              setOptionSets(newOptionSets);
+              setSearchOptionSets(newSearchOptionSets);
+            }}
+            filterControl={filterControl}
+          />
+        </LegacyCard>
+      )}
     </Page>
   );
 }
