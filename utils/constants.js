@@ -19,11 +19,11 @@ export const initialOption = {
     optionValue: "",
     priceAddOn: ""
   }],
-  swatch: [{
-    swatchType: "0",
-    optionValue: "",
-    priceAddOn: ""
-  }],
+  // swatch: [{
+  //   swatchType: "0",
+  //   optionValue: "",
+  //   priceAddOn: ""
+  // }],
   button: [{
     optionValue: "",
     priceAddOn: ""

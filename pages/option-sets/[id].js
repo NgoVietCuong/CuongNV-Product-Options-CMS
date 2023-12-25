@@ -133,7 +133,6 @@ export default function UpdateOptionSet() {
       }
     });
 
-    console.log('test', errorFields)
     if (errorFields) {
       setActiveError(true);
       toast({
@@ -148,6 +147,20 @@ export default function UpdateOptionSet() {
 
     setActiveError(false);
     setIsSaving(true);
+
+    const optionData = options.map(option => {
+      return {
+        ...option,
+        type: parseInt(option.type),
+        textBox: { priceAddOn: parseFloat(option.textBox.priceAddOn)},
+        numberField: { priceAddOn: parseFloat(option.numberField.priceAddOn) },
+        dropdownMenu: option.dropdownMenu.map(detail => { return {...detail, priceAddOn: parseFloat(detail.priceAddOn)}}),
+        checkbox: option.checkbox.map(detail => { return {...detail, priceAddOn: parseFloat(detail.priceAddOn)}}),
+        radioButton: option.radioButton.map(detail => { return {...detail, priceAddOn: parseFloat(detail.priceAddOn)}}),
+        button: option.button.map(detail => { return {...detail, priceAddOn: parseFloat(detail.priceAddOn)}}),
+      }
+    });
+
     const data = {
       shopId: shopId,
       name: name,
@@ -160,7 +173,7 @@ export default function UpdateOptionSet() {
       productIds: products.map(product => parseInt(product)),
       productCollections: collections.map(collection => parseInt(collection)),
       productTags: productTags,
-      options: options
+      options: optionData
     }
 
     const saveOptionSet = await createData([`${process.env.NEXT_PUBLIC_SERVER_URL}/option-sets`, jwt, data]);
@@ -172,7 +185,7 @@ export default function UpdateOptionSet() {
   }
 
   const handleDiscardChange = () => {
-
+    router.push("/option-sets");
   }
 
   return (
