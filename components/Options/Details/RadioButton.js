@@ -5,17 +5,22 @@ import { IoDuplicate, IoTrashBin } from "react-icons/io5";
 import OptionSetContext from "@/context/OptionSetContext";
 
 export default function RadioButtonDetail({ option, index }) {
-  const { options, setOptions, setIsDirty } = useContext(OptionSetContext);
+  const { options, setOptions, activeError, optionErrors, setOptionErrors, setIsDirty } = useContext(OptionSetContext);
 
   const handleAddValue = () => {
-    option.radioButton.push({
+    const radioButton = [...option.radioButton];
+    radioButton.push({
       optionValue: "",
       priceAddOn: ""
     });
+    option.radioButton = radioButton;
     const newOptions = [...options];
     newOptions[index] = option;
-    setOptions(newOptions);
+    const newOptionErrors = [...optionErrors];
+    newOptionErrors[index].radioButton.push(true);
     setIsDirty(true);
+    setOptions(newOptions);
+    setOptionErrors(newOptionErrors);
   }
 
   const handleDuplicateValue = (itemIndex) => {
@@ -23,16 +28,23 @@ export default function RadioButtonDetail({ option, index }) {
     option.radioButton.splice(itemIndex + 1, 0, detail);
     const newOptions = [...options];
     newOptions[index] = option;
-    setOptions(newOptions);
+    const error = optionErrors[index].radioButton[itemIndex];
+    const newOptionErrors = [...optionErrors];
+    newOptionErrors[index].radioButton.splice(itemIndex + 1, 0, error);
     setIsDirty(true);
+    setOptions(newOptions);
+    setOptionErrors(newOptionErrors);
   }
 
   const handleDeleteValue = (itemIndex) => {
     option.radioButton.splice(itemIndex, 1);
     const newOptions = [...options];
     newOptions[index] = option;
-    setOptions(newOptions);
+    const newOptionErrors = [...optionErrors];
+    newOptionErrors[index].radioButton.splice(itemIndex, 1);
     setIsDirty(true);
+    setOptions(newOptions);
+    setOptionErrors(newOptionErrors);
   }
 
   const handleValueChange = (itemIndex, value) => {
@@ -41,8 +53,17 @@ export default function RadioButtonDetail({ option, index }) {
     option.radioButton = detailArray;
     const newOptions = [...options];
     newOptions[index] = option;
-    setOptions(newOptions);
+    const newOptionErrors = [...optionErrors];
+    const radioButtonErrors = [...newOptionErrors[index].radioButton]
+    if (value.trim()) {
+      radioButtonErrors[itemIndex] = false;
+    } else {
+      radioButtonErrors[itemIndex] = true;
+    }
+    newOptionErrors[index].radioButton = radioButtonErrors;
     setIsDirty(true);
+    setOptions(newOptions);
+    setOptionErrors(newOptionErrors);
   }
 
   const handlePriceChange = (itemIndex, value) => {
@@ -52,8 +73,8 @@ export default function RadioButtonDetail({ option, index }) {
     option.radioButton = detailArray;
     const newOptions = [...options];
     newOptions[index] = option;
-    setOptions(newOptions);
     setIsDirty(true);
+    setOptions(newOptions);
   }
 
   const handlePriceRound = (itemIndex, event) => {
@@ -63,8 +84,8 @@ export default function RadioButtonDetail({ option, index }) {
     option.radioButton = detailArray;
     const newOptions = [...options];
     newOptions[index] = option;
-    setOptions(newOptions);
     setIsDirty(true);
+    setOptions(newOptions);
   }
 
   return (
@@ -84,6 +105,7 @@ export default function RadioButtonDetail({ option, index }) {
               autoComplete="off"
               value={item.optionValue}
               onChange={(value) => handleValueChange(itemIndex, value)}
+              error={(activeError && optionErrors[index].radioButton[itemIndex]) && "Option value is required"}
             />
           </Layout.Section>
           <Layout.Section oneThird>

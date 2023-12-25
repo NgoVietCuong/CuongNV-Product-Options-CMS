@@ -15,8 +15,6 @@ h1, h2, h3, h4, h5, h6, p {
   border-radius: 0.375rem!important;
 }
 
-
-
 .Polaris-HorizontalStack {
   --pc-horizontal-stack-block-align: center!important;
 }
@@ -90,6 +88,11 @@ h1, h2, h3, h4, h5, h6, p {
 
 .Polaris-LegacyCard__Section + .Polaris-LegacyCard__Section {
   border-color: #E2E8F0!important;
+}
+
+/* Alert Banner */
+.Polaris-Banner.Polaris-Banner--statusCritical.Polaris-Banner--withinPage {
+  margin-bottom: 1rem!important;
 }
 
 /* Selected Items Banner */

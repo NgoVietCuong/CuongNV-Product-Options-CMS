@@ -5,17 +5,22 @@ import { IoDuplicate, IoTrashBin } from "react-icons/io5";
 import OptionSetContext from "@/context/OptionSetContext";
 
 export default function CheckboxDetail({ option, index }) {
-  const { options, setOptions, setIsDirty } = useContext(OptionSetContext);
+  const { options, setOptions, activeError, optionErrors, setOptionErrors, setIsDirty } = useContext(OptionSetContext);
 
   const handleAddValue = () => {
-    option.checkbox.push({
+    const checkbox = [...option.checkbox];
+    checkbox.push({
       optionValue: "",
       priceAddOn: ""
-    });
+    })
+    option.checkbox = checkbox;
     const newOptions = [...options];
     newOptions[index] = option;
-    setOptions(newOptions);
+    const newOptionErrors = [...optionErrors];
+    newOptionErrors[index].checkbox.push(true);
     setIsDirty(true);
+    setOptions(newOptions);
+    setOptionErrors(newOptionErrors);
   }
 
   const handleDuplicateValue = (itemIndex) => {
@@ -23,16 +28,23 @@ export default function CheckboxDetail({ option, index }) {
     option.checkbox.splice(itemIndex + 1, 0, detail);
     const newOptions = [...options];
     newOptions[index] = option;
-    setOptions(newOptions);
+    const error = optionErrors[index].checkbox[itemIndex];
+    const newOptionErrors = [...optionErrors];
+    newOptionErrors[index].checkbox.splice(itemIndex + 1, 0, error);
     setIsDirty(true);
+    setOptions(newOptions);
+    setOptionErrors(newOptionErrors);
   }
 
   const handleDeleteValue = (itemIndex) => {
     option.checkbox.splice(itemIndex, 1);
     const newOptions = [...options];
     newOptions[index] = option;
-    setOptions(newOptions);
+    const newOptionErrors = [...optionErrors];
+    newOptionErrors[index].checkbox.splice(itemIndex, 1);
     setIsDirty(true);
+    setOptions(newOptions);
+    setOptionErrors(newOptionErrors);
   }
 
   const handleValueChange = (itemIndex, value) => {
@@ -41,8 +53,17 @@ export default function CheckboxDetail({ option, index }) {
     option.checkbox = detailArray;
     const newOptions = [...options];
     newOptions[index] = option;
-    setOptions(newOptions);
+    const newOptionErrors = [...optionErrors];
+    const checkboxErrors = [...newOptionErrors[index].checkbox]
+    if (value.trim()) {
+      checkboxErrors[itemIndex] = false;
+    } else {
+      checkboxErrors[itemIndex] = true;
+    }
+    newOptionErrors[index].checkbox = checkboxErrors;
     setIsDirty(true);
+    setOptions(newOptions);
+    setOptionErrors(newOptionErrors);
   }
 
   const handlePriceChange = (itemIndex, value) => {
@@ -84,6 +105,7 @@ export default function CheckboxDetail({ option, index }) {
               autoComplete="off"
               value={item.optionValue}
               onChange={(value) => handleValueChange(itemIndex, value)}
+              error={(activeError && optionErrors[index].checkbox[itemIndex]) && "Option value is required"}
             />
           </Layout.Section>
           <Layout.Section oneThird>

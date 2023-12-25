@@ -7,17 +7,16 @@ import { RxDragHandleDots2  } from "react-icons/rx";
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import OptionSetContext from "@/context/OptionSetContext";
 import Option from "../Options";
-import { initialOption, optionTypes } from "@/utils/constants";
+import { initialOption, initialOptionError, optionTypes } from "@/utils/constants";
 
 export default function OptionForm() {
-  const { options, setOptions, setIsDirty } = useContext(OptionSetContext);
+  const { options, setOptions, optionErrors, setOptionErrors, setIsDirty } = useContext(OptionSetContext);
   const [opens, setOpens] = useState(Array(options.length).fill(false));
 
   const handleToggle = (index) => {
     const newOpens = [...opens];
     newOpens[index] = !opens[index];
     setOpens(newOpens);
-    setIsDirty(true);
   }
 
   const handleAddOption = () => {
@@ -25,9 +24,12 @@ export default function OptionForm() {
     newOpens.push(false);
     const newOptions = [...options];
     newOptions.push({...initialOption});
+    const newOptionErrors = [...optionErrors];
+    newOptionErrors.push({...initialOptionError});
     setIsDirty(true);
     setOpens(newOpens);
     setOptions(newOptions);
+    setOptionErrors(newOptionErrors);
   }
 
   const handleDuplicateOption = (index) => {
@@ -36,9 +38,13 @@ export default function OptionForm() {
     const newOptions = [...options];
     const option = {...newOptions[index]};
     newOptions.splice(index + 1, 0, option);
+    const newOptionErrors = [...optionErrors];
+    const optionError = {...newOptionErrors[index]};
+    newOptionErrors.splice(index +1, 0, optionError);
     setIsDirty(true);
     setOpens(newOpens);
     setOptions(newOptions);
+    setOptionErrors(newOptionErrors);
   }
 
   const handleDeleteOption = (index) => {
@@ -46,9 +52,12 @@ export default function OptionForm() {
     newOpens.splice(index, 1)
     const newOptions = [...options];
     newOptions.splice(index, 1);
+    const newOptionErrors = [...optionErrors];
+    newOptionErrors.splice(index, 1);
     setIsDirty(true);
     setOpens(newOpens);
     setOptions(newOptions);
+    setOptionErrors(newOptionErrors);
   }
 
   const handleOnDragEnd = (result) => {
@@ -59,9 +68,13 @@ export default function OptionForm() {
     const newOptions = [...options];
     const [reorderedOption] = newOptions.splice(result.source.index, 1);
     newOptions.splice(result.destination.index, 0, reorderedOption);
+    const newOptionErrors = [...optionErrors];
+    const [reOrderOptionError] = newOptionErrors.splice(result.source.index, 1);
+    newOptionErrors.splice(result.destination.index, 0, reOrderOptionError);
     setIsDirty(true);
     setOpens(newOpens);
     setOptions(newOptions);
+    setOptionErrors(newOptionErrors);
   }
 
   return (

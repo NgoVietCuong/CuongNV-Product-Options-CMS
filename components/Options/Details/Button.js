@@ -5,17 +5,22 @@ import { IoDuplicate, IoTrashBin } from "react-icons/io5";
 import OptionSetContext from "@/context/OptionSetContext";
 
 export default function ButtonDetail({ option, index }) {
-  const { options, setOptions, setIsDirty } = useContext(OptionSetContext);
+  const { options, setOptions, activeError, optionErrors, setOptionErrors, setIsDirty } = useContext(OptionSetContext);
 
   const handleAddValue = () => {
-    option.button.push({
+    const button = [...option.button];
+    button.push({
       optionValue: "",
       priceAddOn: ""
-    });
+    })
+    option.button = button;
     const newOptions = [...options];
     newOptions[index] = option;
-    setOptions(newOptions);
+    const newOptionErrors = [...optionErrors];
+    newOptionErrors[index].button.push(true);
     setIsDirty(true);
+    setOptions(newOptions);
+    setOptionErrors(newOptionErrors);
   }
 
   const handleDuplicateValue = (itemIndex) => {
@@ -23,16 +28,23 @@ export default function ButtonDetail({ option, index }) {
     option.button.splice(itemIndex + 1, 0, detail);
     const newOptions = [...options];
     newOptions[index] = option;
-    setOptions(newOptions);
+    const error = optionErrors[index].button[itemIndex];
+    const newOptionErrors = [...optionErrors];
+    newOptionErrors[index].button.splice(itemIndex + 1, 0, error);
     setIsDirty(true);
+    setOptions(newOptions);
+    setOptionErrors(newOptionErrors);
   }
 
   const handleDeleteValue = (itemIndex) => {
     option.button.splice(itemIndex, 1);
     const newOptions = [...options];
     newOptions[index] = option;
-    setOptions(newOptions);
+    const newOptionErrors = [...optionErrors];
+    newOptionErrors[index].button.splice(itemIndex, 1);
     setIsDirty(true);
+    setOptions(newOptions);
+    setOptionErrors(newOptionErrors);
   }
 
   const handleValueChange = (itemIndex, value) => {
@@ -41,8 +53,17 @@ export default function ButtonDetail({ option, index }) {
     option.button = detailArray;
     const newOptions = [...options];
     newOptions[index] = option;
-    setOptions(newOptions);
+    const newOptionErrors = [...optionErrors];
+    const buttonErrors = [...newOptionErrors[index].button]
+    if (value.trim()) {
+      buttonErrors[itemIndex] = false;
+    } else {
+      buttonErrors[itemIndex] = true;
+    }
+    newOptionErrors[index].button = buttonErrors;
     setIsDirty(true);
+    setOptions(newOptions);
+    setOptionErrors(newOptionErrors);
   }
 
   const handlePriceChange = (itemIndex, value) => {
@@ -84,6 +105,7 @@ export default function ButtonDetail({ option, index }) {
               autoComplete="off"
               value={item.optionValue}
               onChange={(value) => handleValueChange(itemIndex, value)}
+              error={(activeError && optionErrors[index].button[itemIndex]) && "Option value is required"}
             />
           </Layout.Section>
           <Layout.Section oneThird>

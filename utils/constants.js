@@ -1,6 +1,6 @@
 export const initialOption = {
   label: "",
-  type: "0",
+  type: "4",
   textBox: {
     priceAddOn: ""
   },
@@ -21,13 +21,22 @@ export const initialOption = {
   }],
   swatch: [{
     swatchType: "0",
-    optionValue: null,
-    priceAddOn: null
+    optionValue: "",
+    priceAddOn: ""
   }],
   button: [{
     optionValue: "",
     priceAddOn: ""
   }] 
+}
+
+export const initialOptionError = {
+  label: true,
+  checkbox: [true],
+  radioButton: [true],
+  dropdownMenu: [true],
+  swatch: [true],
+  button: [true]
 }
 
 export const optionTypes = [

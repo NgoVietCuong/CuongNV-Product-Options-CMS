@@ -5,17 +5,22 @@ import { IoDuplicate, IoTrashBin } from "react-icons/io5";
 import OptionSetContext from "@/context/OptionSetContext";
 
 export default function DropdownDetail({ option, index }) {
-  const { options, setOptions, setIsDirty } = useContext(OptionSetContext);
+  const { options, setOptions, activeError, optionErrors, setOptionErrors, setIsDirty } = useContext(OptionSetContext);
 
   const handleAddValue = () => {
-    option.dropdownMenu.push({
+    const dropdownMenu = [...option.dropdownMenu];
+    dropdownMenu.push({
       optionValue: "",
       priceAddOn: ""
-    });
+    })
+    option.dropdownMenu = dropdownMenu;
     const newOptions = [...options];
     newOptions[index] = option;
-    setOptions(newOptions);
+    const newOptionErrors = [...optionErrors];
+    newOptionErrors[index].dropdownMenu.push(true);
     setIsDirty(true);
+    setOptions(newOptions);
+    setOptionErrors(newOptionErrors);
   }
 
   const handleDuplicateValue = (itemIndex) => {
@@ -23,16 +28,23 @@ export default function DropdownDetail({ option, index }) {
     option.dropdownMenu.splice(itemIndex + 1, 0, detail);
     const newOptions = [...options];
     newOptions[index] = option;
-    setOptions(newOptions);
+    const error = optionErrors[index].dropdownMenu[itemIndex];
+    const newOptionErrors = [...optionErrors];
+    newOptionErrors[index].dropdownMenu.splice(itemIndex + 1, 0, error);
     setIsDirty(true);
+    setOptions(newOptions);
+    setOptionErrors(newOptionErrors);
   }
 
   const handleDeleteValue = (itemIndex) => {
     option.dropdownMenu.splice(itemIndex, 1);
     const newOptions = [...options];
     newOptions[index] = option;
-    setOptions(newOptions);
+    const newOptionErrors = [...optionErrors];
+    newOptionErrors[index].dropdownMenu.splice(itemIndex, 1);
     setIsDirty(true);
+    setOptions(newOptions);
+    setOptionErrors(newOptionErrors);
   }
 
   const handleValueChange = (itemIndex, value) => {
@@ -41,8 +53,17 @@ export default function DropdownDetail({ option, index }) {
     option.dropdownMenu = detailArray;
     const newOptions = [...options];
     newOptions[index] = option;
-    setOptions(newOptions);
+    const newOptionErrors = [...optionErrors];
+    const dropdownMenuErrors = [...newOptionErrors[index].dropdownMenu]
+    if (value.trim()) {
+      dropdownMenuErrors[itemIndex] = false;
+    } else {
+      dropdownMenuErrors[itemIndex] = true;
+    }
+    newOptionErrors[index].dropdownMenu = dropdownMenuErrors;
     setIsDirty(true);
+    setOptions(newOptions);
+    setOptionErrors(newOptionErrors);
   }
 
   const handlePriceChange = (itemIndex, value) => {
@@ -84,6 +105,7 @@ export default function DropdownDetail({ option, index }) {
               autoComplete="off"
               value={item.optionValue}
               onChange={(value) => handleValueChange(itemIndex, value)}
+              error={(activeError && optionErrors[index].dropdownMenu[itemIndex]) && "Option value is required"}
             />
           </Layout.Section>
           <Layout.Section oneThird>

@@ -15,14 +15,21 @@ import ButtonDetail from "./Details/Button";
 import { optionTypes } from "@/utils/constants";
 
 export default function Option({ option, index }) {
-  const { options, setOptions, setIsDirty } = useContext(OptionSetContext);
+  const { options, setOptions, activeError, optionErrors, setOptionErrors, setIsDirty } = useContext(OptionSetContext);
 
   const handleLabelChange = (value) => {
     option.label = value;
     const newOptions = [...options];
     newOptions[index] = option;
+    const newOptionErrors = [...optionErrors];
+    if (value.trim()) {
+      newOptionErrors[index].label = false;
+    } else {
+      newOptionErrors[index].label = true;
+    }
     setOptions(newOptions);
     setIsDirty(true);
+    setOptionErrors(newOptionErrors);
   }
 
   const handleTypeChange = (value) => {
@@ -43,6 +50,7 @@ export default function Option({ option, index }) {
               autoComplete="off"
               value={option.label}
               onChange={handleLabelChange}
+              error={(activeError && optionErrors[index].label) && "Option label is required"}
             />
           </Layout.Section>
           <Layout.Section oneThird>

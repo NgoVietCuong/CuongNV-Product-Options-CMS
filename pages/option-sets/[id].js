@@ -9,17 +9,18 @@ import {
   FormLayout,
   ContextualSaveBar
 } from "@shopify/polaris";
-import { Spinner } from "@chakra-ui/react";
+import { Spinner, useToast } from "@chakra-ui/react";
 import { fetchData } from "@/utils/axiosRequest";
 import parseCookies from "@/utils/parseCookies";
 import OptionSetContext from "@/context/OptionSetContext";
 import CustomerForm from "@/components/Forms/CustomerForm";
 import ProductForm from "@/components/Forms/ProductForm";
 import OptionForm from "@/components/Forms/OptionForm";
-import { initialOption } from "@/utils/constants";
+import { initialOption, initialOptionError } from "@/utils/constants";
 
 export default function UpdateOptionSet() {
   const router = useRouter();
+  const toast = useToast();
 
   const [jwt, setJwt] = useState(null);
   const [shopId, setShopId] = useState(null);
@@ -41,6 +42,8 @@ export default function UpdateOptionSet() {
   const [collections, setCollections] = useState([]);
   const [productTags, setProductTags] = useState([]);
   const [options, setOptions] = useState([{...initialOption}]);
+  const [activeError, setActiveError] = useState(false);
+  const [optionErrors, setOptionErrors] = useState([{...initialOptionError}]);
 
   const fetchInitialData = useCallback(async () => {
     if (jwt && shopId) {
@@ -106,6 +109,46 @@ export default function UpdateOptionSet() {
     setIsDirty(true);
   }
 
+  const handleSaveOptionSet = () => {
+    let errorFields = 0;
+    if (!name.trim()) {
+      errorFields += 1;
+      setActiveError(true);
+    }
+
+    if (!priority.trim()) {
+      errorFields += 1;
+      setActiveError(true);
+    }
+
+    options.forEach((option, index) => {
+      if (option.type === "2") {
+        errorFields += optionErrors[index].dropdownMenu.filter(error => error).length;
+      } else if (option.type === "3") {
+        errorFields += optionErrors[index].checkbox.filter(error => error).length;
+      } else if (option.type === "4") {
+        errorFields += optionErrors[index].radioButton.filter(error => error).length;
+      } else if (option.type === "6") {
+        errorFields += optionErrors[index].button.filter(error => error).length;
+      }
+    });
+
+    if (errorFields) {
+      toast({
+        title: "Failed to save option set",
+        description: `Please fill in ${errorFields} required fields to save successfully`,
+        status: "error",
+        isClosable: true,
+        duration: 2000
+      });
+      return;
+    }
+  }
+
+  const handleDiscardChange = () => {
+
+  }
+
   return (
     <Page title="Create Option Set">
       {isFetching ? (
@@ -118,12 +161,12 @@ export default function UpdateOptionSet() {
             {isDirty && <ContextualSaveBar
               message="Unsaved changes"
               saveAction={{
-                onAction: () => console.log('add form submit logic'),
+                onAction: handleSaveOptionSet,
                 loading: false,
                 disabled: false,
               }}
               discardAction={{
-                onAction: () => console.log('add clear form logic'),
+                onAction: handleDiscardChange,
               }}
             />}
             <FormLayout>
@@ -132,6 +175,7 @@ export default function UpdateOptionSet() {
                 value={name}
                 onChange={handleNameChange}
                 autoComplete="off"
+                error={(!name.trim() && activeError) && "Store name is required"}
               />
               <TextField
                 label="Priority"
@@ -140,6 +184,7 @@ export default function UpdateOptionSet() {
                 onChange={handlePriorityChange}
                 helpText="0 is the highest priority. When there are two Option Sets set for the same products/customers, the one with higher priority will be applied."
                 autoComplete="off"
+                error={(!priority.trim() && activeError) && "Priority is required"}
               />
               <Select
                 label="Status"
@@ -159,9 +204,11 @@ export default function UpdateOptionSet() {
             collections, setCollections,
             productTags, setProductTags,
             options, setOptions,
-            setIsDirty, initialProducts,
-            initialCollections, initialProductTags,
-            initialCustomers, initialCustomerTags,
+            optionErrors, setOptionErrors,
+            activeError, setIsDirty,
+            initialProducts, initialCollections,
+            initialProductTags, initialCustomers, 
+            initialCustomerTags,
           }}>
             <CustomerForm />
             <ProductForm />
