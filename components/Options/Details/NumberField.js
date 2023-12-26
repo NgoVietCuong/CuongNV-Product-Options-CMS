@@ -1,26 +1,27 @@
-import { useContext } from "react";
+import { useState, useContext } from "react";
 import { VerticalStack, Layout, TextField, Text } from "@shopify/polaris";
 import OptionSetContext from "@/context/OptionSetContext";
 
 export default function NumberFieldDetail({ option, index }) {
   const { options, setOptions, setIsDirty } = useContext(OptionSetContext);
+  const [price, setPrice] = useState(option.numberField.priceAddOn ? option.numberField.priceAddOn.toFixed(2) : "");
 
   const handlePriceChange = (value) => {
     const numberValue = parseFloat(value);
-    option.numberField = { priceAddOn: numberValue < 0 ? "0" : value };
+    const newPrice = numberValue < 0 ? "0" : value;
     const newOptions = [...options];
-    newOptions[index] = option;
-    setOptions(newOptions);
+    newOptions[index].numberField = { priceAddOn: numberValue < 0 ? 0 : numberValue };
     setIsDirty(true);
+    setPrice(newPrice);
+    setOptions(newOptions);
   }
   
   const handlePriceRound = (event) => {
-    const numberValue = parseFloat(event.target.value);
-    option.numberField = { priceAddOn: numberValue.toFixed(2) };
+    const newPrice = parseFloat(event.target.value).toFixed(2);
     const newOptions = [...options];
-    newOptions[index] = option;
+    newOptions[index].numberField = { priceAddOn: parseFloat(newPrice) };
+    setPrice(newPrice);
     setOptions(newOptions);
-    setIsDirty(true);
   }
 
   return (
@@ -38,7 +39,7 @@ export default function NumberFieldDetail({ option, index }) {
             type="number"
             placeholder="0.00"
             autoComplete="off"
-            value={option.numberField.priceAddOn}
+            value={price}
             onChange={handlePriceChange}
             onBlur={handlePriceRound}
           />

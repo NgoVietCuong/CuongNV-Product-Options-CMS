@@ -12,6 +12,7 @@ import { initialOption, initialOptionError, optionTypes } from "@/utils/constant
 export default function OptionForm() {
   const { options, setOptions, optionErrors, setOptionErrors, setIsDirty } = useContext(OptionSetContext);
   const [opens, setOpens] = useState(Array(options.length).fill(false));
+  const [key, setKey] = useState(options.length);
 
   const handleToggle = (index) => {
     const newOpens = [...opens];
@@ -23,9 +24,10 @@ export default function OptionForm() {
     const newOpens = [...opens];
     newOpens.push(false);
     const newOptions = [...options];
-    newOptions.push({...initialOption});
+    newOptions.push({...initialOption, order: key});
     const newOptionErrors = [...optionErrors];
     newOptionErrors.push({...initialOptionError});
+    setKey(key+1);
     setIsDirty(true);
     setOpens(newOpens);
     setOptions(newOptions);
@@ -36,11 +38,12 @@ export default function OptionForm() {
     const newOpens = [...opens];
     newOpens.splice(index + 1, 0, false);
     const newOptions = [...options];
-    const option = {...newOptions[index]};
+    const option = {...newOptions[index], order: key};
     newOptions.splice(index + 1, 0, option);
     const newOptionErrors = [...optionErrors];
     const optionError = {...newOptionErrors[index]};
     newOptionErrors.splice(index +1, 0, optionError);
+    setKey(key+1);
     setIsDirty(true);
     setOpens(newOpens);
     setOptions(newOptions);
@@ -105,7 +108,7 @@ export default function OptionForm() {
                                     onClick={() => handleToggle(index)}
                                     rightIcon={opens[index] ? <IoIosArrowUp /> : <IoIosArrowDown />}
                                   >{option.label ? option.label : "Untitled Option"}</Button>
-                                  <Text color="subdued" as="p">Type: {optionTypes.find(type => type.value === option.type).label}</Text>
+                                  <Text color="subdued" as="p">Type: {optionTypes.find(type => type.value == option.type).label}</Text>
                                 </HorizontalStack>
                                   
                                 <ButtonGroup variant="segmented">
@@ -152,7 +155,7 @@ export default function OptionForm() {
                               id={`id-${index}`}
                               transition={{duration: '500ms', timingFunction: 'ease-in-out'}}
                             >
-                              <Option option={option} index={index} />
+                              <Option key={option.order} option={option} index={index} />
                             </Collapsible>
                           </LegacyCard>
                         </Box>

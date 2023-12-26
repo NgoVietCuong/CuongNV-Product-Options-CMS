@@ -1,32 +1,33 @@
 export const initialOption = {
   label: "",
-  type: "0",
+  type: 2,
+  order: 0,
   textBox: {
-    priceAddOn: ""
+    priceAddOn: NaN
   },
   numberField: {
-    priceAddOn: ""
+    priceAddOn: NaN
   },
   checkbox: [{
     optionValue: "",
-    priceAddOn: ""
+    priceAddOn: NaN
   }],
   radioButton: [{
     optionValue: "",
-    priceAddOn: ""
+    priceAddOn: NaN
   }],
   dropdownMenu: [{
     optionValue: "",
-    priceAddOn: ""
+    priceAddOn: NaN
   }],
   // swatch: [{
-  //   swatchType: "0",
+  //   swatchType: 0,
   //   optionValue: "",
-  //   priceAddOn: ""
+  //   priceAddOn: NaN
   // }],
   button: [{
     optionValue: "",
-    priceAddOn: ""
+    priceAddOn: NaN
   }] 
 }
 

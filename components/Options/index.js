@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useState, useContext } from "react";
 import { 
   LegacyCard,
   TextField,
@@ -16,28 +16,30 @@ import { optionTypes } from "@/utils/constants";
 
 export default function Option({ option, index }) {
   const { options, setOptions, activeError, optionErrors, setOptionErrors, setIsDirty } = useContext(OptionSetContext);
+  const [label, setLabel] = useState(option.label);
+  const [type, setType] = useState(option.type.toString());
 
   const handleLabelChange = (value) => {
-    option.label = value;
     const newOptions = [...options];
-    newOptions[index] = option;
+    newOptions[index].label = value;
     const newOptionErrors = [...optionErrors];
     if (value.trim()) {
       newOptionErrors[index].label = false;
     } else {
       newOptionErrors[index].label = true;
     }
-    setOptions(newOptions);
+    setLabel(value);
     setIsDirty(true);
+    setOptions(newOptions);
     setOptionErrors(newOptionErrors);
   }
 
   const handleTypeChange = (value) => {
-    option.type = value;
     const newOptions = [...options];
-    newOptions[index] = option;
-    setOptions(newOptions);
+    newOptions[index].type = parseInt(value);
+    setType(value);
     setIsDirty(true);
+    setOptions(newOptions);
   }
 
   return (
@@ -48,7 +50,7 @@ export default function Option({ option, index }) {
             <TextField
               label="Label on store front"
               autoComplete="off"
-              value={option.label}
+              value={label}
               onChange={handleLabelChange}
               error={(activeError && optionErrors[index].label) && "Option label is required"}
             />
@@ -57,19 +59,19 @@ export default function Option({ option, index }) {
             <Select
               label="Option type"
               options={optionTypes}
-              value={option.type}
+              value={type}
               onChange={handleTypeChange}
             />
           </Layout.Section>
         </Layout>
       </LegacyCard.Section>
       <LegacyCard.Section>
-        {option.type === "0" && <TextBoxDetail option={option} index={index} />}
-        {option.type === "1" && <NumberFieldDetail option={option} index={index} />}
-        {option.type === "2" && <DropdownDetail option={option} index={index} />}
-        {option.type === "3" && <CheckboxDetail option={option} index={index} />}
-        {option.type === "4" && <RadioButtonDetail option={option} index={index} />}
-        {option.type === "6" && <ButtonDetail option={option} index={index} />}
+        {option.type === 0 && <TextBoxDetail option={option} index={index} />}
+        {option.type === 1 && <NumberFieldDetail option={option} index={index} />}
+        {option.type === 2 && <DropdownDetail option={option} index={index} />}
+        {option.type === 3 && <CheckboxDetail option={option} index={index} />}
+        {option.type === 4 && <RadioButtonDetail  option={option} index={index} />}
+        {option.type === 6 && <ButtonDetail option={option} index={index} />}
       </LegacyCard.Section>
     </>
   )
