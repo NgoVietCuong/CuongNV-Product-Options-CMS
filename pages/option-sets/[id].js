@@ -4,6 +4,7 @@ import {
   Page,
   LegacyCard,
   Layout,
+  Modal,
   TextField,
   Select,
   FormLayout,
@@ -45,6 +46,7 @@ export default function UpdateOptionSet() {
   const [options, setOptions] = useState([{...initialOption}]);
   const [activeError, setActiveError] = useState(false);
   const [optionErrors, setOptionErrors] = useState([{...initialOptionError}]);
+  const [open, setOpen] = useState(false);
   
   const fetchInitialData = useCallback(async () => {
     if (jwt && shopId) {
@@ -94,6 +96,8 @@ export default function UpdateOptionSet() {
     { label: "Enable", value: true },
     { label: "Disabled", value: false },
   ];
+
+  const handleToggleModal = () => setOpen((open) => !open);
 
   const handleNameChange =(newName) => {
     setName(newName);
@@ -148,16 +152,10 @@ export default function UpdateOptionSet() {
     setActiveError(false);
     setIsSaving(true);
 
-    const optionData = options.map(option => {
+    const optionData = options.map((option, index) => {
       return {
         ...option,
-        type: parseInt(option.type),
-        textBox: { priceAddOn: parseFloat(option.textBox.priceAddOn)},
-        numberField: { priceAddOn: parseFloat(option.numberField.priceAddOn) },
-        dropdownMenu: option.dropdownMenu.map(detail => { return {...detail, priceAddOn: parseFloat(detail.priceAddOn)}}),
-        checkbox: option.checkbox.map(detail => { return {...detail, priceAddOn: parseFloat(detail.priceAddOn)}}),
-        radioButton: option.radioButton.map(detail => { return {...detail, priceAddOn: parseFloat(detail.priceAddOn)}}),
-        button: option.button.map(detail => { return {...detail, priceAddOn: parseFloat(detail.priceAddOn)}}),
+        order: index
       }
     });
 
@@ -196,6 +194,25 @@ export default function UpdateOptionSet() {
         </Layout>
       ) : (
         <>
+          <Modal
+            open={open}
+            onClose={handleToggleModal}
+            title="Discard Changes?"
+            primaryAction={{
+              content: "Discard",
+              onAction: handleDiscardChange
+            }}
+            secondaryActions={[
+              {
+                content: 'Cancel',
+                onAction: handleToggleModal,
+              },
+            ]}
+          >
+            <Modal.Section>
+              <p>All your changes will be lost. This cannot be undone</p>
+            </Modal.Section>
+          </Modal>
           <LegacyCard title="General Information" sectioned>
             {isDirty && <ContextualSaveBar
               message="Unsaved changes"
@@ -205,7 +222,7 @@ export default function UpdateOptionSet() {
                 disabled: isSaving,
               }}
               discardAction={{
-                onAction: handleDiscardChange,
+                onAction: handleToggleModal,
               }}
             />}
             <FormLayout>

@@ -1,6 +1,6 @@
 export const initialOption = {
   label: "",
-  type: 2,
+  type: 0,
   order: 0,
   textBox: {
     priceAddOn: NaN

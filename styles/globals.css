@@ -180,7 +180,7 @@ h1, h2, h3, h4, h5, h6, p {
 
 .Polaris-Navigation__Item.Polaris-Navigation__Item--selected {
   color: #2B6CB0!important;
-  background-color: #EBF8FF;
+  background-color: #EBF8FF!important;
 }
 
 .Polaris-Navigation__Item.Polaris-Navigation__Item--selected .Polaris-Navigation__Icon svg {

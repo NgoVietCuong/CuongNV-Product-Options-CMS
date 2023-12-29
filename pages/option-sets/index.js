@@ -10,9 +10,10 @@ import {
   Text,
   Badge,
   Layout,
-  VerticalStack
+  VerticalStack,
+  EmptyState
 } from "@shopify/polaris";
-import { Button, Grid, GridItem, Spinner} from "@chakra-ui/react";
+import { Box, Button, Grid, GridItem, Spinner} from "@chakra-ui/react";
 import parseCookies from "@/utils/parseCookies";
 import { fetchData } from "@/utils/axiosRequest";
 import formatMongoDateTime from "@/utils/formatTime";
@@ -26,6 +27,21 @@ export default function OptionSets() {
   const [selectedItems, setSelectedItems] = useState([]);
   const [sortValue, setSortValue] = useState("DATE_UPDATED_DESC");
   const [queryValue, setQueryValue] = useState(undefined);
+
+  const resourceName = {
+    singular: "option set",
+    plural: "option sets",
+  };
+
+  const emptyState = !optionSets.length ? (
+    <Box>
+      <EmptyState
+        image="https://cdn.shopify.com/s/files/1/2376/3301/products/emptystate-files.png"
+      >
+        <Text variant="bodyMd" fontWeight="medium" as="h2">Create a new option set to get started</Text>
+      </EmptyState>
+    </Box>
+  ) : undefined;
 
   useEffect(() => {
     const cookies = parseCookies(document.cookie);
@@ -55,11 +71,6 @@ export default function OptionSets() {
     setSearchOptionSets(newSearchOptionSets);
   }
 
-  const resourceName = {
-    singular: "option set",
-    plural: "option sets",
-  };
-
   const bulkActions = [
     {
       content: "Enable Option Sets",
@@ -85,11 +96,6 @@ export default function OptionSets() {
       filters={[]}
       onQueryChange={handleQueryValueChange}
     >
-      {/* <div style={{ paddingLeft: "8px" }}>
-        <Button size="sm" h="34px" variant="outline" colorScheme="gray" onClick={() => router.push("/option-sets/create")}>
-          Search
-        </Button>
-      </div> */}
     </Filters>
   );
 
@@ -172,6 +178,7 @@ export default function OptionSets() {
         <LegacyCard>
           <ResourceList
             resourceName={resourceName}
+            emptyState={emptyState}
             items={searchOptionSets}
             renderItem={renderItem}
             selectedItems={selectedItems}

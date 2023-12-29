@@ -23,10 +23,13 @@ export default function OptionForm() {
   const handleAddOption = () => {
     const newOpens = [...opens];
     newOpens.push(false);
+
     const newOptions = [...options];
     newOptions.push({...initialOption, order: key});
+
     const newOptionErrors = [...optionErrors];
     newOptionErrors.push({...initialOptionError});
+
     setKey(key+1);
     setIsDirty(true);
     setOpens(newOpens);
@@ -37,12 +40,15 @@ export default function OptionForm() {
   const handleDuplicateOption = (index) => {
     const newOpens = [...opens];
     newOpens.splice(index + 1, 0, false);
+
     const newOptions = [...options];
     const option = {...newOptions[index], order: key};
     newOptions.splice(index + 1, 0, option);
+
     const newOptionErrors = [...optionErrors];
     const optionError = {...newOptionErrors[index]};
     newOptionErrors.splice(index +1, 0, optionError);
+
     setKey(key+1);
     setIsDirty(true);
     setOpens(newOpens);
@@ -52,11 +58,14 @@ export default function OptionForm() {
 
   const handleDeleteOption = (index) => {
     const newOpens = [...opens];
-    newOpens.splice(index, 1)
+    newOpens.splice(index, 1);
+
     const newOptions = [...options];
     newOptions.splice(index, 1);
+
     const newOptionErrors = [...optionErrors];
     newOptionErrors.splice(index, 1);
+    
     setIsDirty(true);
     setOpens(newOpens);
     setOptions(newOptions);
@@ -68,12 +77,15 @@ export default function OptionForm() {
     const newOpens = [...opens];
     const [reOrderOpen] = newOpens.splice(result.source.index, 1);
     newOpens.splice(result.destination.index, 0, reOrderOpen);
+    
     const newOptions = [...options];
     const [reorderedOption] = newOptions.splice(result.source.index, 1);
     newOptions.splice(result.destination.index, 0, reorderedOption);
+
     const newOptionErrors = [...optionErrors];
     const [reOrderOptionError] = newOptionErrors.splice(result.source.index, 1);
     newOptionErrors.splice(result.destination.index, 0, reOrderOptionError);
+    
     setIsDirty(true);
     setOpens(newOpens);
     setOptions(newOptions);

@@ -12,19 +12,22 @@ export default function DropdownDetail({ option, index }) {
   const handleAddValue = () => {
     const newValues = [...values];
     newValues.push("");
+
     const newPrices = [...prices];
     newPrices.push(NaN);
-    const dropdownMenu = newValues.map((value, valueIndex) => {
-      return {
-        optionValue: value,
-        priceAddOn: newPrices[valueIndex]
-      }
+
+    const dropdownMenu = [...option.dropdownMenu];
+    dropdownMenu.push({
+      optionValue: "",
+      priceAddOn: NaN
     });
     option.dropdownMenu = dropdownMenu;
     const newOptions = [...options];
     newOptions[index] = option;
+
     const newOptionErrors = [...optionErrors];
     newOptionErrors[index].dropdownMenu.push(true);
+
     setIsDirty(true);
     setValues(newValues);
     setPrices(newPrices);
@@ -35,20 +38,19 @@ export default function DropdownDetail({ option, index }) {
   const handleDuplicateValue = (itemIndex) => {
     const newValues = [...values];
     newValues.splice(itemIndex + 1, 0, values[itemIndex]);
+
     const newPrices = [...prices];
     newPrices.splice(itemIndex + 1, 0, prices[itemIndex]);
-    const dropdownMenu = newValues.map((value, valueIndex) => {
-      return {
-        optionValue: value,
-        priceAddOn: newPrices[valueIndex]
-      }
-    });
-    option.dropdownMenu = dropdownMenu;
+
+    const detail = {...option.dropdownMenu[itemIndex]};
+    option.dropdownMenu.splice(itemIndex + 1, 0, detail);
     const newOptions = [...options];
     newOptions[index] = option;
+
     const error = optionErrors[index].dropdownMenu[itemIndex];
     const newOptionErrors = [...optionErrors];
     newOptionErrors[index].dropdownMenu.splice(itemIndex + 1, 0, error);
+
     setIsDirty(true);
     setValues(newValues);
     setPrices(newPrices);
@@ -59,19 +61,17 @@ export default function DropdownDetail({ option, index }) {
   const handleDeleteValue = (itemIndex) => {
     const newValues = [...values];
     newValues.splice(itemIndex, 1);
+
     const newPrices = [...prices];
-    newPrices.splice(itemIndex + 1);
-    const dropdownMenu = newValues.map((value, valueIndex) => {
-      return {
-        optionValue: value,
-        priceAddOn: newPrices[valueIndex]
-      }
-    });
-    option.dropdownMenu = dropdownMenu;
+    newPrices.splice(itemIndex, 1);
+
+    option.dropdownMenu.splice(itemIndex, 1);
     const newOptions = [...options];
     newOptions[index] = option;
+
     const newOptionErrors = [...optionErrors];
     newOptionErrors[index].dropdownMenu.splice(itemIndex, 1);
+
     setIsDirty(true);
     setValues(newValues);
     setPrices(newPrices);
@@ -82,11 +82,13 @@ export default function DropdownDetail({ option, index }) {
   const handleValueChange = (itemIndex, value) => {
     const newValues = [...values];
     newValues[itemIndex] = value;
-    const detailArray = [...option.dropdownMenu];
-    detailArray[itemIndex] = {...option.dropdownMenu[itemIndex], optionValue: value};
-    option.dropdownMenu = detailArray;
+
+    const dropdownMenu = [...option.dropdownMenu];
+    dropdownMenu[itemIndex] = {...option.dropdownMenu[itemIndex], optionValue: value};
+    option.dropdownMenu = dropdownMenu;
     const newOptions = [...options];
     newOptions[index] = option;
+
     const newOptionErrors = [...optionErrors];
     const dropdownMenuErrors = [...newOptionErrors[index].dropdownMenu]
     if (value.trim()) {
@@ -95,6 +97,7 @@ export default function DropdownDetail({ option, index }) {
       dropdownMenuErrors[itemIndex] = true;
     }
     newOptionErrors[index].dropdownMenu = dropdownMenuErrors;
+
     setIsDirty(true);
     setValues(newValues);
     setOptions(newOptions);
@@ -103,24 +106,34 @@ export default function DropdownDetail({ option, index }) {
 
   const handlePriceChange = (itemIndex, value) => {
     const numberValue = parseFloat(value);
-    const detailArray = [...option.dropdownMenu];
-    detailArray[itemIndex] = {...option.dropdownMenu[itemIndex], priceAddOn: numberValue < 0 ? 0 : numberValue};
-    option.dropdownMenu = detailArray;
+    const newPrices = [...prices];
+    newPrices[itemIndex] = numberValue < 0 ? "0" : value;
+
+    const dropdownMenu = [...option.dropdownMenu];
+    dropdownMenu[itemIndex] = {...option.dropdownMenu[itemIndex], priceAddOn: numberValue < 0 ? 0 : numberValue};
+    option.dropdownMenu = dropdownMenu;
     const newOptions = [...options];
     newOptions[index] = option;
-    setOptions(newOptions);
+
     setIsDirty(true);
+    setPrices(newPrices);
+    setOptions(newOptions);
   }
 
   const handlePriceRound = (itemIndex, event) => {
     const numberValue = parseFloat(event.target.value);
-    const detailArray = [...option.dropdownMenu];
-    detailArray[itemIndex] = {...option.dropdownMenu[itemIndex], priceAddOn: parseFloat(numberValue.toFixed(2))};
-    option.dropdownMenu = detailArray;
+    const newPrices = [...prices];
+    newPrices[itemIndex] = numberValue.toFixed(2);
+
+    const dropdownMenu = [...option.dropdownMenu];
+    dropdownMenu[itemIndex] = {...option.dropdownMenu[itemIndex], priceAddOn: parseFloat(numberValue.toFixed(2))};
+    option.dropdownMenu = dropdownMenu;
     const newOptions = [...options];
     newOptions[index] = option;
-    setOptions(newOptions);
+
     setIsDirty(true);
+    setPrices(newPrices);
+    setOptions(newOptions);
   }
 
   return (
@@ -134,9 +147,7 @@ export default function DropdownDetail({ option, index }) {
         </Layout.Section>
       </Layout>
       {option.dropdownMenu.map((item, itemIndex) => (
-        
         <Layout>
-          {console.log('test', item.priceAddOn)}
           <Layout.Section oneThird>
             <TextField 
               autoComplete="off"
