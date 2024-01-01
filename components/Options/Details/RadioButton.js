@@ -14,12 +14,12 @@ export default function RadioButtonDetail({ option, index }) {
     newValues.push("");
 
     const newPrices = [...prices];
-    newPrices.push(NaN);
+    newPrices.push("");
 
     const radioButton = [...option.radioButton];
     radioButton.push({
       optionValue: "",
-      priceAddOn: NaN
+      priceAddOn: 0
     });
     option.radioButton = radioButton;
     const newOptions = [...options];
@@ -126,7 +126,7 @@ export default function RadioButtonDetail({ option, index }) {
     newPrices[itemIndex] = numberValue.toFixed(2);
 
     const radioButton = [...option.radioButton];
-    radioButton[itemIndex] = {...option.radioButton[itemIndex], priceAddOn: parseFloat(numberValue.toFixed(2))};
+    radioButton[itemIndex] = {...option.radioButton[itemIndex], priceAddOn: numberValue ? parseFloat(numberValue.toFixed(2)) : 0 };
     option.radioButton = radioButton;
     const newOptions = [...options];
     newOptions[index] = option;

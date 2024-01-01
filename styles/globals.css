@@ -90,6 +90,19 @@ h1, h2, h3, h4, h5, h6, p {
   border-color: #E2E8F0!important;
 }
 
+/* Breadcrumbs */
+.Polaris-Breadcrumbs__Breadcrumb {
+  border: none!important;
+}
+
+.Polaris-Breadcrumbs__Breadcrumb:hover {
+  background: #EDF2F7!important;
+}
+
+.Polaris-Breadcrumbs__Breadcrumb:hover .Polaris-Breadcrumbs__Icon svg {
+  fill: rgba(97, 106, 117, 1)!important;
+}
+
 /* Alert Banner */
 .Polaris-Banner.Polaris-Banner--statusCritical.Polaris-Banner--withinPage {
   margin-bottom: 1rem!important;

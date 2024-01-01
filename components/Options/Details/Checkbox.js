@@ -14,12 +14,12 @@ export default function CheckboxDetail({ option, index }) {
     newValues.push("");
 
     const newPrices = [...prices];
-    newPrices.push(NaN);
+    newPrices.push("");
 
     const checkbox = [...option.checkbox];
     checkbox.push({
       optionValue: "",
-      priceAddOn: NaN
+      priceAddOn: 0
     })
     option.checkbox = checkbox;
     const newOptions = [...options];
@@ -126,7 +126,7 @@ export default function CheckboxDetail({ option, index }) {
     newPrices[itemIndex] = numberValue.toFixed(2);
 
     const checkbox = [...option.checkbox];
-    checkbox[itemIndex] = {...option.checkbox[itemIndex], priceAddOn: parseFloat(numberValue.toFixed(2))};
+    checkbox[itemIndex] = {...option.checkbox[itemIndex], priceAddOn: numberValue ? parseFloat(numberValue.toFixed(2)) : 0 };
     option.checkbox = checkbox;
     const newOptions = [...options];
     newOptions[index] = option;

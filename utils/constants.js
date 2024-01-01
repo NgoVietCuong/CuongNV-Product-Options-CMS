@@ -3,31 +3,31 @@ export const initialOption = {
   type: 0,
   order: 0,
   textBox: {
-    priceAddOn: NaN
+    priceAddOn: 0
   },
   numberField: {
-    priceAddOn: NaN
+    priceAddOn: 0
   },
   checkbox: [{
     optionValue: "",
-    priceAddOn: NaN
+    priceAddOn: 0
   }],
   radioButton: [{
     optionValue: "",
-    priceAddOn: NaN
+    priceAddOn: 0
   }],
   dropdownMenu: [{
     optionValue: "",
-    priceAddOn: NaN
+    priceAddOn: 0
   }],
   // swatch: [{
   //   swatchType: 0,
   //   optionValue: "",
-  //   priceAddOn: NaN
+  //   priceAddOn: 0
   // }],
   button: [{
     optionValue: "",
-    priceAddOn: NaN
+    priceAddOn: 0
   }] 
 }
 
@@ -38,6 +38,15 @@ export const initialOptionError = {
   dropdownMenu: [true],
   swatch: [true],
   button: [true]
+}
+
+export const existOptionError = {
+  label: false,
+  checkbox: [false],
+  radioButton: [false],
+  dropdownMenu: [false],
+  swatch: [false],
+  button: [false]
 }
 
 export const optionTypes = [

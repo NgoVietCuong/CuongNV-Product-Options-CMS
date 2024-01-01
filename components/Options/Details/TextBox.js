@@ -17,9 +17,9 @@ export default function TextBoxDetail({ option, index }) {
   }
   
   const handlePriceRound = (event) => {
-    const newPrice = parseFloat(event.target.value).toFixed(2);
+    const newPrice = parseFloat(event.target.value);
     const newOptions = [...options];
-    newOptions[index].textBox = { priceAddOn: parseFloat(newPrice) };
+    newOptions[index].textBox = { priceAddOn: newPrice ? parseFloat(newPrice.toFixed(2)) : 0 };
     setPrice(newPrice);
     setOptions(newOptions);
   }

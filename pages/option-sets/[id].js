@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/router";
 import {
   Page,
+  Badge,
   LegacyCard,
   Layout,
   Modal,
@@ -12,7 +13,7 @@ import {
 } from "@shopify/polaris";
 import { Spinner, useToast } from "@chakra-ui/react";
 import { fetchData, createData, updateData } from "@/utils/axiosRequest";
-import { initialOption, initialOptionError } from "@/utils/constants";
+import { initialOption, initialOptionError, existOptionError } from "@/utils/constants";
 import parseCookies from "@/utils/parseCookies";
 import OptionSetContext from "@/context/OptionSetContext";
 import CustomerForm from "@/components/Forms/CustomerForm";
@@ -22,7 +23,7 @@ import OptionForm from "@/components/Forms/OptionForm";
 export default function UpdateOptionSet() {
   const router = useRouter();
   const toast = useToast();
-
+  const { id } = router.query;
   const [jwt, setJwt] = useState(null);
   const [shopId, setShopId] = useState(null);
   const [initialProducts, setInitialProducts] = useState([]);
@@ -35,7 +36,7 @@ export default function UpdateOptionSet() {
   const [isFetching, setIsFetching] = useState(true);
   const [name, setName] = useState("");
   const [priority, setPriority] = useState("0");
-  const [status, setStatus] = useState(true);
+  const [status, setStatus] = useState("true");
   const [applyToCustomer, setApplyToCustomer] = useState("0");
   const [customers, setCustomers] = useState([]);
   const [customerTags, setCustomerTags] = useState([]);
@@ -51,6 +52,25 @@ export default function UpdateOptionSet() {
   const fetchInitialData = useCallback(async () => {
     if (jwt && shopId) {
       setIsFetching(true);
+      if (id !== "create") {
+        const optionSetRes = await fetchData([`${process.env.NEXT_PUBLIC_SERVER_URL}/option-sets/${id}`, jwt]);
+        if (optionSetRes && optionSetRes.statusCode === 200) {
+          const optionSet = optionSetRes.payload;
+          setName(optionSet.name);
+          setPriority(optionSet.priority.toString());
+          setStatus(optionSet.status.toString());
+          setApplyToCustomer(optionSet.applyToCustomer.toString());
+          setCustomers(optionSet.customerIds.map(customer => customer.toString()));
+          setCustomerTags(optionSet.customerTags)
+          setApplyToProduct("0" + optionSet.applyToProduct.toString());
+          setProducts(optionSet.productIds.map(product => product.toString()));
+          setCollections(optionSet.productCollections.map(collection => collection.toString()));
+          setProductTags(optionSet.productTags);
+          setOptions(optionSet.options.sort((first, second) => first.order - second.order));
+          setOptionErrors(Array(optionSet.options.length).fill({...existOptionError}));
+        }
+      }
+
       const productRes = await fetchData([`${process.env.NEXT_PUBLIC_SERVER_URL}/products/list`, jwt]);
       const [collectionRes, productTagRes, customerRes, customerTagRes] = await Promise.all([
         fetchData([`${process.env.NEXT_PUBLIC_SERVER_URL}/products/collections`, jwt]),
@@ -80,7 +100,7 @@ export default function UpdateOptionSet() {
       }
       setIsFetching(false);
     }
-  }, [jwt, shopId]);
+  }, [jwt, id, shopId]);
 
   useEffect(() => {
     const cookies = parseCookies(document.cookie);
@@ -93,8 +113,8 @@ export default function UpdateOptionSet() {
   }, [fetchInitialData]);
 
   const statusOptions = [
-    { label: "Enable", value: true },
-    { label: "Disabled", value: false },
+    { label: "Enable", value: "true" },
+    { label: "Disabled", value: "false" },
   ];
 
   const handleToggleModal = () => setOpen((open) => !open);
@@ -153,6 +173,7 @@ export default function UpdateOptionSet() {
     setIsSaving(true);
 
     const optionData = options.map((option, index) => {
+      delete option._id;
       return {
         ...option,
         order: index
@@ -163,7 +184,7 @@ export default function UpdateOptionSet() {
       shopId: shopId,
       name: name,
       priority: parseInt(priority),
-      status: status,
+      status: status === "true",
       applyToCustomer: parseInt(applyToCustomer),
       customerIds: customers.map(customer => parseInt(customer)),
       customerTags: customerTags,
@@ -174,12 +195,18 @@ export default function UpdateOptionSet() {
       options: optionData
     }
 
-    const saveOptionSet = await createData([`${process.env.NEXT_PUBLIC_SERVER_URL}/option-sets`, jwt, data]);
-    setIsSaving(false);
-
-    if (saveOptionSet && saveOptionSet.statusCode === 201) {
-      router.push("/option-sets");
+    if (id === "create") {
+      const createOptionSet = await createData([`${process.env.NEXT_PUBLIC_SERVER_URL}/option-sets`, jwt, data]);
+      if (createOptionSet && createOptionSet.statusCode === 201) {
+        router.push("/option-sets");
+      }
+    } else {
+      const updateOptionSet = await updateData([`${process.env.NEXT_PUBLIC_SERVER_URL}/option-sets/${id}`, jwt, data]);
+      if (updateOptionSet && updateOptionSet.statusCode === 200) {
+        router.push("/option-sets");
+      }
     }
+    setIsSaving(false);
   }
 
   const handleDiscardChange = () => {
@@ -187,13 +214,19 @@ export default function UpdateOptionSet() {
   }
 
   return (
-    <Page title="Create Option Set">
+    <>
       {isFetching ? (
-        <Layout>
-          <Spinner top="10px" color='blue.500' size='md' />
-        </Layout>
+        <Page>
+          <Layout>
+            <Spinner position="relative" top="50px" color='blue.500' size='md' />
+          </Layout>
+        </Page>
       ) : (
-        <>
+        <Page 
+          title= {(id === "create") ? "Create Option Set" : `${name}`}
+          backAction={{ onAction: () => router.push("/option-sets")}}
+          titleMetadata={(id === "create") ? null : (status === "true" ? <Badge status="info">Active</Badge> : <Badge status="new">Inactive</Badge>) }
+        >
           <Modal
             open={open}
             onClose={handleToggleModal}
@@ -270,8 +303,8 @@ export default function UpdateOptionSet() {
             <ProductForm />
             <OptionForm />
           </OptionSetContext.Provider>
-        </>
+        </Page>
       )}
-    </Page>
+    </>
   );
 }

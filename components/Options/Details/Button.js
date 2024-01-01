@@ -14,12 +14,12 @@ export default function ButtonDetail({ option, index }) {
     newValues.push("");
 
     const newPrices = [...prices];
-    newPrices.push(NaN);
+    newPrices.push("");
 
     const button = [...option.button];
     button.push({
       optionValue: "",
-      priceAddOn: NaN
+      priceAddOn: 0
     });
     option.button = button;
     const newOptions = [...options];
@@ -126,7 +126,7 @@ export default function ButtonDetail({ option, index }) {
     newPrices[itemIndex] = numberValue.toFixed(2);
 
     const button = [...option.button];
-    button[itemIndex] = {...option.button[itemIndex], priceAddOn: parseFloat(numberValue.toFixed(2))};
+    button[itemIndex] = {...option.button[itemIndex], priceAddOn: numberValue ? parseFloat(numberValue.toFixed(2)) : 0 };
     option.button = button;
     const newOptions = [...options];
     newOptions[index] = option;

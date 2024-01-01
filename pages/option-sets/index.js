@@ -116,6 +116,7 @@ export default function OptionSets() {
     return (
       <ResourceItem
         id={_id}
+        onClick={() => router.push("/option-sets/[id]", `/option-sets/${_id}`)}
         accessibilityLabel={`View details for ${name}`}
         persistActions
       >
@@ -126,7 +127,7 @@ export default function OptionSets() {
             </Text>
           </GridItem>
           <GridItem>
-            <Badge status={status ? "info": "new"} progress={status ? "complete": "partiallyComplete"}>{status ? "Enable" : "Disable"}</Badge>
+            <Badge status={status ? "info": "new"} progress={status ? "complete": "partiallyComplete"}>{status ? "Active" : "Inactive"}</Badge>
           </GridItem>
           <GridItem>
             <VerticalStack gap="1px">

@@ -14,12 +14,12 @@ export default function DropdownDetail({ option, index }) {
     newValues.push("");
 
     const newPrices = [...prices];
-    newPrices.push(NaN);
+    newPrices.push("");
 
     const dropdownMenu = [...option.dropdownMenu];
     dropdownMenu.push({
       optionValue: "",
-      priceAddOn: NaN
+      priceAddOn: 0
     });
     option.dropdownMenu = dropdownMenu;
     const newOptions = [...options];
@@ -126,7 +126,7 @@ export default function DropdownDetail({ option, index }) {
     newPrices[itemIndex] = numberValue.toFixed(2);
 
     const dropdownMenu = [...option.dropdownMenu];
-    dropdownMenu[itemIndex] = {...option.dropdownMenu[itemIndex], priceAddOn: parseFloat(numberValue.toFixed(2))};
+    dropdownMenu[itemIndex] = {...option.dropdownMenu[itemIndex], priceAddOn: numberValue ? parseFloat(numberValue.toFixed(2)) : 0 };
     option.dropdownMenu = dropdownMenu;
     const newOptions = [...options];
     newOptions[index] = option;
