@@ -1,4 +1,4 @@
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import {
@@ -15,7 +15,7 @@ import {
 } from "@shopify/polaris";
 import { Box, Button, Grid, GridItem, Spinner} from "@chakra-ui/react";
 import parseCookies from "@/utils/parseCookies";
-import { fetchData } from "@/utils/axiosRequest";
+import { fetchData, updateData } from "@/utils/axiosRequest";
 import formatMongoDateTime from "@/utils/formatTime";
 
 export default function OptionSets() {
@@ -27,6 +27,7 @@ export default function OptionSets() {
   const [selectedItems, setSelectedItems] = useState([]);
   const [sortValue, setSortValue] = useState("DATE_UPDATED_DESC");
   const [queryValue, setQueryValue] = useState(undefined);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const resourceName = {
     singular: "option set",
@@ -59,9 +60,10 @@ export default function OptionSets() {
   );
 
   useEffect(() => {
+    setIsUpdating(false);
     if (data && data.statusCode === 200) {
-      setOptionSets(data.payload);
-      setSearchOptionSets(data.payload);
+      setOptionSets(data.payload.map(optionSet => { return {...optionSet, id: optionSet._id }}));
+      setSearchOptionSets(data.payload.map(optionSet => { return {...optionSet, id: optionSet._id }}));
     }
   }, [data]);
 
@@ -71,22 +73,36 @@ export default function OptionSets() {
     setSearchOptionSets(newSearchOptionSets);
   }
 
+  const handleEnableOptionSets = async () => {
+    setIsUpdating(true);
+    setSelectedItems([]);
+    await updateData([`${process.env.NEXT_PUBLIC_SERVER_URL}/option-sets`, jwt, { ids: selectedItems, status: true }]);
+    mutate([`${process.env.NEXT_PUBLIC_SERVER_URL}/option-sets`, jwt]);
+  }
+
+  const handleDisableOptionSets = async () => {
+    setIsUpdating(true);
+    setSelectedItems([]);
+    await updateData([`${process.env.NEXT_PUBLIC_SERVER_URL}/option-sets`, jwt, { ids: selectedItems, status: false }]);
+    mutate([`${process.env.NEXT_PUBLIC_SERVER_URL}/option-sets`, jwt]);
+  }
+
+  const handleDeleteOptionSets = async () => {
+    
+  }
+
   const bulkActions = [
     {
       content: "Enable Option Sets",
-      onAction: () => console.log("Enable Option Sets"),
+      onAction: handleEnableOptionSets,
     },
     {
       content: "Disable Option Sets",
-      onAction: () => console.log("Disable Option Sets"),
-    },
-    {
-      content: "Duplicate Option Sets",
-      onAction: () => console.log("Duplicat Option Sets"),
+      onAction: handleDisableOptionSets,
     },
     {
       content: "Delete Option Sets",
-      onAction: () => console.log("Delete Option Sets"),
+      onAction: handleDeleteOptionSets,
     },
   ];
 
@@ -99,8 +115,8 @@ export default function OptionSets() {
     </Filters>
   );
 
-  function renderItem(item) {
-    const { _id, name, status, applyToProduct, productIds, productCollections, productTags, createdAt, updatedAt } = item;
+  function renderItem(item, id) {
+    const { name, status, applyToProduct, productIds, productCollections, productTags, createdAt, updatedAt } = item;
     let applyTo = "";
 
     if (applyToProduct === 0) {
@@ -115,10 +131,11 @@ export default function OptionSets() {
 
     return (
       <ResourceItem
-        id={_id}
-        onClick={() => router.push("/option-sets/[id]", `/option-sets/${_id}`)}
+        id={id}
+        key={id}
+        onClick={() => router.push("/option-sets/[id]", `/option-sets/${id}`)}
         accessibilityLabel={`View details for ${name}`}
-        persistActions
+        // persistActions
       >
         <Grid w="100%" gridTemplateColumns="1fr 0.7fr 1.1fr 1.1fr 0.6fr" alignItems='center'>
           <GridItem>
@@ -185,6 +202,7 @@ export default function OptionSets() {
             selectedItems={selectedItems}
             onSelectionChange={setSelectedItems}
             bulkActions={bulkActions}
+            loading={isUpdating}
             sortValue={sortValue}
             sortOptions={[
               { label: "Newest updated", value: "DATE_UPDATED_DESC" },
