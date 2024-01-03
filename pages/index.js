@@ -1,7 +1,6 @@
 import useSWR, { mutate } from "swr";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import styles from "../styles/Home.module.css";
 import { fetchData, updateData } from "@/utils/axiosRequest";
 import { Page, LegacyCard, Layout, FormLayout } from "@shopify/polaris";
 import { Text, Button, Switch, IconButton, Spinner } from "@chakra-ui/react";
@@ -51,10 +50,10 @@ export default function Home() {
           <Layout.Section oneThird>
             <LegacyCard sectioned>
               <FormLayout>
-                <div className={styles.po_info_card_header}>
-                  <div className={styles.po_info_card_inner}>
+                <div className="po_info_card_header">
+                  <div className="po_info_card_inner">
                     <IconButton
-                      size={"sm"}
+                      size="sm"
                       bg="blue.50"
                       variant="outline"
                       colorScheme="blue"
@@ -84,8 +83,8 @@ export default function Home() {
           <Layout.Section oneThird>
             <LegacyCard sectioned>
               <FormLayout>
-                <div className={styles.po_info_card_header}>
-                  <div className={styles.po_info_card_inner}>
+                <div className="po_info_card_header">
+                  <div className="po_info_card_inner">
                     <IconButton
                       size={"sm"}
                       bg="teal.50"
@@ -111,8 +110,8 @@ export default function Home() {
           <Layout.Section oneThird>
             <LegacyCard sectioned>
               <FormLayout>
-                <div className={styles.po_info_card_header}>
-                  <div className={styles.po_info_card_inner}>
+                <div className="po_info_card_header">
+                  <div className="po_info_card_inner">
                     <IconButton
                       size={"sm"}
                       bg="cyan.50"

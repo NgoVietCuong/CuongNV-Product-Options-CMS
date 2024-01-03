@@ -9,6 +9,19 @@ h1, h2, h3, h4, h5, h6, p {
   color: #353535;
 }
 
+/* Config Card */
+.po_info_card_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.po_info_card_inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 /* UI components */
 .Polaris-Button,
 .Polaris-TextField {
@@ -238,4 +251,32 @@ p.Polaris-Text--subdued  {
 span.Polaris-Text--bodyMd {
   font-size: 0.8125rem!important;
   font-weight: 450!important;
+}
+
+/* Swatch Container */
+.po_swatch_container .Polaris-Modal-Section > .Polaris-Box {
+  box-sizing: border-box;
+  display: flex;
+}
+
+.po_swatch_container section.Polaris-Box {
+  width: 100%;
+}
+
+.po_preview_swatch_container {
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.po_preview_swatch {
+  display: block;
+  width: 100px;
+  height: 100px;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-top: 10px;
+  box-shadow: 5px 5px 10px #0000004d;
 }

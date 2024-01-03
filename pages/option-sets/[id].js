@@ -1,17 +1,16 @@
-import { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/router";
 import {
   Page,
   Badge,
   LegacyCard,
   Layout,
-  Modal,
   TextField,
   Select,
   FormLayout,
   ContextualSaveBar
 } from "@shopify/polaris";
-import { Spinner, useToast } from "@chakra-ui/react";
+import { Spinner, useToast, useDisclosure } from "@chakra-ui/react";
 import { fetchData, createData, updateData } from "@/utils/axiosRequest";
 import { initialOption, initialOptionError, existOptionError } from "@/utils/constants";
 import parseCookies from "@/utils/parseCookies";
@@ -19,6 +18,7 @@ import OptionSetContext from "@/context/OptionSetContext";
 import CustomerForm from "@/components/Forms/CustomerForm";
 import ProductForm from "@/components/Forms/ProductForm";
 import OptionForm from "@/components/Forms/OptionForm";
+import DiscardChangesModal from "@/components/Modals/DiscardChanges";
 
 export default function UpdateOptionSet() {
   const router = useRouter();
@@ -47,7 +47,8 @@ export default function UpdateOptionSet() {
   const [options, setOptions] = useState([{...initialOption}]);
   const [activeError, setActiveError] = useState(false);
   const [optionErrors, setOptionErrors] = useState([{...initialOptionError}]);
-  const [open, setOpen] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const cancelRef = React.useRef();
   
   const fetchInitialData = useCallback(async () => {
     if (jwt && shopId) {
@@ -116,8 +117,6 @@ export default function UpdateOptionSet() {
     { label: "Enable", value: "true" },
     { label: "Disabled", value: "false" },
   ];
-
-  const handleToggleModal = () => setOpen((open) => !open);
 
   const handleNameChange =(newName) => {
     setName(newName);
@@ -227,25 +226,7 @@ export default function UpdateOptionSet() {
           backAction={{ onAction: () => router.push("/option-sets")}}
           titleMetadata={(id === "create") ? null : (status === "true" ? <Badge status="info">Active</Badge> : <Badge status="new">Inactive</Badge>) }
         >
-          <Modal
-            open={open}
-            onClose={handleToggleModal}
-            title="Discard Changes?"
-            primaryAction={{
-              content: "Discard",
-              onAction: handleDiscardChange
-            }}
-            secondaryActions={[
-              {
-                content: 'Cancel',
-                onAction: handleToggleModal,
-              },
-            ]}
-          >
-            <Modal.Section>
-              <p>All your changes will be lost. This cannot be undone</p>
-            </Modal.Section>
-          </Modal>
+          <DiscardChangesModal isOpen={isOpen} onClose={onClose} cancelRef={cancelRef} discardChange={handleDiscardChange} />
           <LegacyCard title="General Information" sectioned>
             {isDirty && <ContextualSaveBar
               message="Unsaved changes"
@@ -255,7 +236,7 @@ export default function UpdateOptionSet() {
                 disabled: isSaving,
               }}
               discardAction={{
-                onAction: handleToggleModal,
+                onAction: onOpen,
               }}
             />}
             <FormLayout>

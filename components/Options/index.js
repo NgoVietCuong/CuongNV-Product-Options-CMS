@@ -11,6 +11,7 @@ import OptionSetContext from "@/context/OptionSetContext";
 import DropdownDetail from "./Details/DropdownMenu";
 import CheckboxDetail from "./Details/Checkbox";
 import RadioButtonDetail from "./Details/RadioButton";
+import SwatchDetail from "./Details/Swatch";
 import ButtonDetail from "./Details/Button";
 import { optionTypes } from "@/utils/constants";
 
@@ -70,7 +71,8 @@ export default function Option({ option, index }) {
         {option.type === 1 && <NumberFieldDetail option={option} index={index} />}
         {option.type === 2 && <DropdownDetail option={option} index={index} />}
         {option.type === 3 && <CheckboxDetail option={option} index={index} />}
-        {option.type === 4 && <RadioButtonDetail  option={option} index={index} />}
+        {option.type === 4 && <RadioButtonDetail option={option} index={index} />}
+        {option.type === 5 && <SwatchDetail option={option} index={index} />}
         {option.type === 6 && <ButtonDetail option={option} index={index} />}
       </LegacyCard.Section>
     </>

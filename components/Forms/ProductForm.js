@@ -1,4 +1,4 @@
-import { useCallback, useContext } from "react";
+import { useContext } from "react";
 import { FormLayout, LegacyCard, RadioButton } from "@shopify/polaris";
 import OptionSetContext from "@/context/OptionSetContext";
 import ProductResource from "../Resource/Products";
@@ -8,12 +8,10 @@ import ProductTagResource from "../Resource/ProductTags";
 export default function ProductForm() {
   const { applyToProduct, setApplyToProduct, setIsDirty } = useContext(OptionSetContext);
 
-  const handleValueChange = useCallback(
-    (_, value) => {
-      setApplyToProduct(value);
-      setIsDirty(true);
-    }, []
-  )
+  const handleValueChange = (_, value) => {
+    setApplyToProduct(value);
+    setIsDirty(true);
+  }
 
   return (
     <LegacyCard title="Apply to Products" sectioned>

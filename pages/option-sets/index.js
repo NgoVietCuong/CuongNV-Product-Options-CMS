@@ -1,5 +1,5 @@
 import useSWR, { mutate } from "swr";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import {
   Filters,
@@ -13,7 +13,8 @@ import {
   VerticalStack,
   EmptyState
 } from "@shopify/polaris";
-import { Box, Button, Grid, GridItem, Spinner} from "@chakra-ui/react";
+import { Box, Button, Grid, GridItem, Spinner, useDisclosure } from "@chakra-ui/react";
+import ConfirmDeleteModal from "@/components/Modals/ConfirmDelete";
 import parseCookies from "@/utils/parseCookies";
 import { fetchData, updateData } from "@/utils/axiosRequest";
 import formatMongoDateTime from "@/utils/formatTime";
@@ -28,6 +29,8 @@ export default function OptionSets() {
   const [sortValue, setSortValue] = useState("DATE_UPDATED_DESC");
   const [queryValue, setQueryValue] = useState(undefined);
   const [isUpdating, setIsUpdating] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const cancelRef = React.useRef();
 
   const resourceName = {
     singular: "option set",
@@ -88,7 +91,11 @@ export default function OptionSets() {
   }
 
   const handleDeleteOptionSets = async () => {
-    
+    onClose();
+    setIsUpdating(true);
+    setSelectedItems([]);
+    await updateData([`${process.env.NEXT_PUBLIC_SERVER_URL}/option-sets/delete`, jwt, { ids: selectedItems }]);
+    mutate([`${process.env.NEXT_PUBLIC_SERVER_URL}/option-sets`, jwt]);
   }
 
   const bulkActions = [
@@ -102,7 +109,7 @@ export default function OptionSets() {
     },
     {
       content: "Delete Option Sets",
-      onAction: handleDeleteOptionSets,
+      onAction: onOpen,
     },
   ];
 
@@ -193,49 +200,52 @@ export default function OptionSets() {
           <Spinner top="10px" color='blue.500' size='md' />
         </Layout>
       ) : (
-        <LegacyCard>
-          <ResourceList
-            resourceName={resourceName}
-            emptyState={emptyState}
-            items={searchOptionSets}
-            renderItem={renderItem}
-            selectedItems={selectedItems}
-            onSelectionChange={setSelectedItems}
-            bulkActions={bulkActions}
-            loading={isUpdating}
-            sortValue={sortValue}
-            sortOptions={[
-              { label: "Newest updated", value: "DATE_UPDATED_DESC" },
-              { label: "Oldest updated", value: "DATE_UPDATED_ASC" },
-            ]}
-            onSortChange={(selected) => {
-              setSortValue(selected);
-              const newOptionSets = [...optionSets];
-              const newSearchOptionSets = [...searchOptionSets];
-              newOptionSets.sort((first, second) => {
-                let firstDate = new Date(first.updatedAt);
-                let secondDate = new Date(second.updatedAt);
-                if (selected === "DATE_UPDATED_DESC") {
-                  return secondDate - firstDate;
-                } else {
-                  return firstDate - secondDate;
-                }
-              });
-              newSearchOptionSets.sort((first, second) => {
-                let firstDate = new Date(first.updatedAt);
-                let secondDate = new Date(second.updatedAt);
-                if (selected === "DATE_UPDATED_DESC") {
-                  return secondDate - firstDate;
-                } else {
-                  return firstDate - secondDate;
-                }
-              });
-              setOptionSets(newOptionSets);
-              setSearchOptionSets(newSearchOptionSets);
-            }}
-            filterControl={filterControl}
-          />
-        </LegacyCard>
+        <>
+          <ConfirmDeleteModal isOpen={isOpen} onClose={onClose} cancelRef={cancelRef} confirmDelete={handleDeleteOptionSets} />
+          <LegacyCard>
+            <ResourceList
+              resourceName={resourceName}
+              emptyState={emptyState}
+              items={searchOptionSets}
+              renderItem={renderItem}
+              selectedItems={selectedItems}
+              onSelectionChange={setSelectedItems}
+              bulkActions={bulkActions}
+              loading={isUpdating}
+              sortValue={sortValue}
+              sortOptions={[
+                { label: "Newest updated", value: "DATE_UPDATED_DESC" },
+                { label: "Oldest updated", value: "DATE_UPDATED_ASC" },
+              ]}
+              onSortChange={(selected) => {
+                setSortValue(selected);
+                const newOptionSets = [...optionSets];
+                const newSearchOptionSets = [...searchOptionSets];
+                newOptionSets.sort((first, second) => {
+                  let firstDate = new Date(first.updatedAt);
+                  let secondDate = new Date(second.updatedAt);
+                  if (selected === "DATE_UPDATED_DESC") {
+                    return secondDate - firstDate;
+                  } else {
+                    return firstDate - secondDate;
+                  }
+                });
+                newSearchOptionSets.sort((first, second) => {
+                  let firstDate = new Date(first.updatedAt);
+                  let secondDate = new Date(second.updatedAt);
+                  if (selected === "DATE_UPDATED_DESC") {
+                    return secondDate - firstDate;
+                  } else {
+                    return firstDate - secondDate;
+                  }
+                });
+                setOptionSets(newOptionSets);
+                setSearchOptionSets(newSearchOptionSets);
+              }}
+              filterControl={filterControl}
+            />
+          </LegacyCard>
+        </>
       )}
     </Page>
   );

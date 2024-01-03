@@ -1,4 +1,4 @@
-import { useCallback, useContext } from "react";
+import { useContext } from "react";
 import { FormLayout, LegacyCard, RadioButton } from "@shopify/polaris";
 import OptionSetContext from "@/context/OptionSetContext";
 import CustomerResource from "../Resource/Customers";
@@ -6,12 +6,10 @@ import CustomerTagResource from "../Resource/CustomerTags";
 
 export default function CustomerForm() {
   const { applyToCustomer, setApplyToCustomer, setIsDirty } = useContext(OptionSetContext);
-  const handleValueChange = useCallback(
-    (_, value) => {
-      setApplyToCustomer(value);
-      setIsDirty(true);
-    }, []
-  );
+  const handleValueChange = (_, value) => {
+    setApplyToCustomer(value);
+    setIsDirty(true);
+  }
 
   return (
     <LegacyCard title="Apply to Customers" sectioned>
