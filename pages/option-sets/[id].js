@@ -26,6 +26,7 @@ export default function UpdateOptionSet() {
   const { id } = router.query;
   const [jwt, setJwt] = useState(null);
   const [shopId, setShopId] = useState(null);
+  const [shopDomain, setShopDomain] = useState(null);
   const [initialProducts, setInitialProducts] = useState([]);
   const [initialCollections, setInitialCollections] = useState([]);
   const [initialProductTags, setInitialProductTags] = useState([]);
@@ -107,6 +108,7 @@ export default function UpdateOptionSet() {
     const cookies = parseCookies(document.cookie);
     setJwt(cookies.jwtToken);
     setShopId(cookies.shopId);
+    setShopDomain(cookies.shop);
   }, []);
 
   useEffect(() => {
@@ -278,7 +280,7 @@ export default function UpdateOptionSet() {
             activeError, setIsDirty,
             initialProducts, initialCollections,
             initialProductTags, initialCustomers, 
-            initialCustomerTags,
+            initialCustomerTags, shopDomain
           }}>
             <CustomerForm />
             <ProductForm />

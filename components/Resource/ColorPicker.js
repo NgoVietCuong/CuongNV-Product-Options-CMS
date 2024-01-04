@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FormLayout, TextField, ColorPicker } from "@shopify/polaris";
 
-export default function SwatchColorPicker({ value, setValue, color, setColor}) {
+export default function SwatchColorPicker({ value, handleValueChange, color, handleColorChange}) {
   console.log('color', color)
   return (
     <FormLayout>
@@ -9,9 +9,9 @@ export default function SwatchColorPicker({ value, setValue, color, setColor}) {
         label="Color Picker (Hex)"
         prefix="#"
         value={value}
-        onChange={setValue}
+        onChange={handleValueChange}
       />
-      <ColorPicker onChange={setColor} color={color}/>
+      <ColorPicker onChange={handleColorChange} color={color}/>
     </FormLayout>
   )
 }

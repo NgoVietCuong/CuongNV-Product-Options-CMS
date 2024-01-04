@@ -263,6 +263,12 @@ span.Polaris-Text--bodyMd {
   width: 100%;
 }
 
+.po_swatch_container .Polaris-Modal-Section .Polaris-Box>.Polaris-VerticalStack {
+  padding-left: 25px;
+  /* padding-right: 20px; */
+  border-left: 1px solid rgba(225,227,229,1);
+}
+
 .po_preview_swatch_container {
   width: 50%;
   display: flex;

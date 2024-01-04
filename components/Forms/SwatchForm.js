@@ -4,61 +4,101 @@ import { IconButton, Box } from "@chakra-ui/react";
 import { LuImagePlus } from "react-icons/lu";
 import OptionSetContext from "@/context/OptionSetContext";
 import SwatchColorPicker from "../Resource/ColorPicker";
-import convert from "color-convert"
+import ImageUpload from "../Resource/ImageUpload";
+import { HexToHSV, HSVToHex } from "@/utils/colorConverter";
 
 export default function SwatchForm({ option, optionIndex, itemIndex}) {
   const { options, setOptions, setIsDirty } = useContext(OptionSetContext);
   const [open, setOpen] = useState(false);
+  const [type, setType] = useState(option.swatch[itemIndex].swatchType);
   const [value, setValue] = useState(option.swatch[itemIndex].colorValue);
-  const [color, setColor] = useState(option.swatch[itemIndex].colorValue);
+  const [color, setColor] = useState(HexToHSV(option.swatch[itemIndex].colorValue));
 
-  // console.log('test1', convert.hex.hsv("0000FF"));
-  // console.log('test2', convert.hsv.hex(70.71428571428571, 95.625, 78.9));
+  useEffect(() => {
+    const Reg_Exp = /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i;
+    const previewSwatch = document.querySelector(`#po_preview_swatch_${optionIndex}_${itemIndex}`);
+    if (previewSwatch) {
+      if (type === 0 && Reg_Exp.test(`#${value}`)) {
+        previewSwatch.style.backgroundColor = `#${value}`;
+      } else {
+        previewSwatch.style.backgroundColor = `#FFFFFF`;
+      }
+    }
+
+  }, [value, open, type]);
+
+  useEffect(() => {
+    console.log('run')
+    const buttonSwatch = document.querySelector(`#button_swatch_${optionIndex}_${itemIndex}`);
+    const content = buttonSwatch.querySelector("svg");
+    if (option.swatch[itemIndex].swatchType === 0 && option.swatch[itemIndex].colorValue) {
+      buttonSwatch.style.backgroundColor = `#${option.swatch[itemIndex].colorValue}`;
+      content.style.visibility = "hidden";
+    } else {
+      buttonSwatch.style.backgroundColor = "#EDF2F7";
+      content.style.visibility = "visible";
+    }
+  }, [open]);
 
   const handleColorChange = (newColor) => {
-
+    const hexColor = HSVToHex(newColor);
+    setValue(hexColor);
+    setColor(newColor);
   }
 
   const handleValueChange = (newValue) => {
-
+    const hsvColor = HexToHSV(newValue);
+    setValue(newValue);
+    setColor(hsvColor);
   }
-
-  useEffect(() => {
-    let { hue: h, saturation: s, brightness: b} = color;
-    s = s*100;
-    b = b*100;
-    const hexColor = convert.hsv.hex(h, s, b);
-    const previewSwatch = document.querySelector(`#po_preview_swatch_${optionIndex}_${itemIndex}`);
-    previewSwatch.style.backgroundColor = `#${hexColor}`;
-    setValue(hexColor);
-  }, [color]);
 
   const handleToggleModal = () => setOpen((open) => !open);
 
   const handleTypeChange = (_, value) => {
+    setType(parseInt(value));
+  }
+
+  const handleCancelSave = () => {
+    setType(option.swatch[itemIndex].swatchType);
+    setValue(option.swatch[itemIndex].colorValue);
+    setColor(HexToHSV(option.swatch[itemIndex].colorValue));
+    setOpen(!open);
+  }
+
+  const handleSaveSwatch = () => {
+    const Reg_Exp = /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i;
+    const colorValue = Reg_Exp.test(`#${value}`) ? value : "";
+
     const swatch = [...option.swatch];
-    swatch[itemIndex] = {...option.swatch[itemIndex], swatchType: parseInt(value)};
+    swatch[itemIndex] = {
+      ...option.swatch[itemIndex], 
+      swatchType: parseInt(type), 
+      colorValue: colorValue
+    };
     option.swatch = swatch;
     const newOptions = [...options];
     newOptions[optionIndex] = option;
-    setOptions(newOptions);
+
+    setOpen(!open);
     setIsDirty(true);
+    setValue(colorValue);
+    setOptions(newOptions);
   }
 
   return (
     <>
       <Modal
         open={open}
-        onClose={handleToggleModal}
+        onClose={handleCancelSave}
         title="Add swatch"
         primaryAction={{
           content: "Save",
-          onAction: () => {}
+          onAction: handleSaveSwatch
         }}
         secondaryActions={[
           {
             content: "Cancel",
-            onAction: () => {},
+            onAction: handleCancelSave,
           },
         ]}
       >
@@ -75,17 +115,18 @@ export default function SwatchForm({ option, optionIndex, itemIndex}) {
                 label="Color swatch"
                 id="000"
                 name="swatch"
-                checked={option.swatch[itemIndex].swatchType === 0}
+                checked={type === 0}
                 onChange={handleTypeChange}
               />
-              {option.swatch[itemIndex].swatchType === 0 && <SwatchColorPicker value={value} setValue={setValue} color={color} setColor={setColor} />}
+              {type === 0 && <SwatchColorPicker value={value} handleValueChange={handleValueChange} color={color} handleColorChange={handleColorChange} />}
               <RadioButton
                 label="Image swatch"
                 id="001"
                 name="swatch"
-                checked={option.swatch[itemIndex].swatchType === 1}
+                checked={type === 1}
                 onChange={handleTypeChange}
               />
+              {type === 1 && <ImageUpload />}
             </VerticalStack>
           </Modal.Section>
         </Box>
