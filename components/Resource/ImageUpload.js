@@ -15,8 +15,6 @@ export default function ImageUpload() {
   const [rejectedFile, setRejectedFile] = useState();
   const [isUploading, setIsUploading] = useState(false);
 
-  console.log("rejectedFile", rejectedFile)
-
   const handleDrop = async (_dropFiles, acceptedFiles, _rejectedFiles) => {
     if (acceptedFiles[0]) {
       setIsUploading(true);
@@ -38,29 +36,32 @@ export default function ImageUpload() {
         console.log('Error', e);
       }
     } else {
+      setFile();
       setRejectedFile(_rejectedFiles[0]);
     }
   };
 
-  const fileUpload = !isUploading && <DropZone.FileUpload actionHint="Accepts .gif, .svg, .jpg, and .png" />;
+  const fileUpload = <DropZone.FileUpload actionHint="Accepts .gif, .svg, .jpg, and .png" />;
 
-  const uploadedFile = file > 0 && (
-    <LegacyStack vertical>
-      {files.map((file, index) => (
-        <LegacyStack alignment="center" key={index}>
-          <Thumbnail
-            size="small"
-            alt={file.name}
-            source={window.URL.createObjectURL(file)}
-          />
-          <div>
-            {file.name}{' '}
-            <Text variant="bodySm" as="p">
-              {file.size} bytes
-            </Text>
-          </div>
-        </LegacyStack>
-      ))}
+  const validImageTypes = ['image/gif', 'image/jpeg', 'image/png'];
+
+  const uploadedFile = file && (
+    <LegacyStack>
+      <Thumbnail
+        size="small"
+        alt={file.name}
+        source={
+          validImageTypes.includes(file.type)
+            ? window.URL.createObjectURL(file)
+            : NoteMinor
+        }
+      />
+      <div>
+        {file.name}{' '}
+        <Text variant="bodySm" as="p">
+          {file.size} bytes
+        </Text>
+      </div>
     </LegacyStack>
   );
 
@@ -85,9 +86,9 @@ export default function ImageUpload() {
   return (
     <LegacyStack vertical>
       {errorMessage}
+      {uploadingMessage}
+      {uploadedFile}
       <DropZone accept="image/*" type="image" onDrop={handleDrop}>
-        {uploadingMessage}
-        {uploadedFile}
         {fileUpload}
       </DropZone>
     </LegacyStack>
