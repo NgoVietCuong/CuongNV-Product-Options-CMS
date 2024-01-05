@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { FormLayout, LegacyCard, RadioButton } from "@shopify/polaris";
+import { FormLayout, LegacyCard, RadioButton, Text } from "@shopify/polaris";
 import OptionSetContext from "@/context/OptionSetContext";
 import CustomerResource from "../Resource/Customers";
 import CustomerTagResource from "../Resource/CustomerTags";
@@ -12,8 +12,9 @@ export default function CustomerForm() {
   }
 
   return (
-    <LegacyCard title="Apply to Customers" sectioned>
+    <LegacyCard sectioned>
         <FormLayout>
+        <Text variant="headingSm" as="h6">Apply to Customers</Text>
           <RadioButton
             label="All customers"
             id="0"

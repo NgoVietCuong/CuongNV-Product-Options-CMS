@@ -3,15 +3,14 @@ import { useState, useContext } from "react";
 import {   
   DropZone,
   LegacyStack,
-  Thumbnail,
   Banner,
   List,
-  Text, } from "@shopify/polaris";
+  Button
+} from "@shopify/polaris";
 import OptionSetContext from "@/context/OptionSetContext";
 
-export default function ImageUpload() {
+export default function ImageUpload({ image, setImage }) {
   const { shopDomain } = useContext(OptionSetContext);
-  const [file, setFile] = useState();
   const [rejectedFile, setRejectedFile] = useState();
   const [isUploading, setIsUploading] = useState(false);
 
@@ -29,40 +28,19 @@ export default function ImageUpload() {
           method: 'post',
           data: formData
         });
-        console.log("resposne", response)
         setIsUploading(false);
-        setFile(acceptedFiles[0]);
+        setImage(response.data.secure_url);
       } catch (e) {
         console.log('Error', e);
       }
     } else {
-      setFile();
+      setImage("");
       setRejectedFile(_rejectedFiles[0]);
     }
   };
 
-  const fileUpload = <DropZone.FileUpload actionHint="Accepts .gif, .svg, .jpg, and .png" />;
-
-  const validImageTypes = ['image/gif', 'image/jpeg', 'image/png'];
-
-  const uploadedFile = file && (
-    <LegacyStack>
-      <Thumbnail
-        size="small"
-        alt={file.name}
-        source={
-          validImageTypes.includes(file.type)
-            ? window.URL.createObjectURL(file)
-            : NoteMinor
-        }
-      />
-      <div>
-        {file.name}{' '}
-        <Text variant="bodySm" as="p">
-          {file.size} bytes
-        </Text>
-      </div>
-    </LegacyStack>
+  const uploadedFile = image && (
+    <Button onClick={() => setImage("")}>Delete image</Button>
   );
 
   const errorMessage = rejectedFile && (
@@ -76,9 +54,9 @@ export default function ImageUpload() {
   );
   
   const uploadingMessage = isUploading && (
-    <Banner >
+    <Banner status="info">
       <p>
-        Image uploading
+        Image uploading...
       </p>
     </Banner>
   )
@@ -88,9 +66,11 @@ export default function ImageUpload() {
       {errorMessage}
       {uploadingMessage}
       {uploadedFile}
-      <DropZone accept="image/*" type="image" onDrop={handleDrop}>
-        {fileUpload}
-      </DropZone>
+      {(!image && !isUploading) && (
+        <DropZone accept="image/*" type="image" onDrop={handleDrop}>
+          <DropZone.FileUpload actionHint="Accepts .gif, .svg, .jpg, and .png" />
+        </DropZone>
+      )}
     </LegacyStack>
   );
 }

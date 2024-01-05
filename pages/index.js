@@ -1,5 +1,5 @@
 import useSWR, { mutate } from "swr";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
 import { fetchData, updateData } from "@/utils/axiosRequest";
 import { Page, LegacyCard, Layout, FormLayout } from "@shopify/polaris";
@@ -26,6 +26,12 @@ export default function Home() {
       shouldRetryOnError: false
     }
   );
+
+  useEffect(() => {
+    if (data && data.payload._id) {
+      updateData([`${process.env.NEXT_PUBLIC_SERVER_URL}/theme`, jwt, { shopId: shopId }]);
+    }
+  }, [data]);
 
   const handleConfigChange = async (configName) => {
     const { payload: { appStatus, editInCart, priceAddOns } } = data;

@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { Collapsible, LegacyCard, FormLayout, HorizontalStack, Text, Box } from "@shopify/polaris";
+import { Collapsible, LegacyCard, FormLayout, HorizontalStack, Text, Box, VerticalStack } from "@shopify/polaris";
 import { Button, ButtonGroup, IconButton, Tooltip } from "@chakra-ui/react";
 import { IoDuplicate, IoTrashBin } from "react-icons/io5";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
@@ -93,8 +93,9 @@ export default function OptionForm() {
   }
 
   return (
-    <LegacyCard title="Options" sectioned>
-      <FormLayout>
+    <LegacyCard sectioned>
+      <VerticalStack gap="3">
+        <Text variant="headingSm" as="h6">Options</Text>
         <DragDropContext onDragEnd={handleOnDragEnd}>
           <Droppable droppableId="options" key="options">
             {(provided) => (
@@ -180,8 +181,8 @@ export default function OptionForm() {
             )}
           </Droppable>
         </DragDropContext>
-        <Button size="sm" h="34px" variant="solid" colorScheme="blue" onClick={handleAddOption}>Add new option</Button>
-      </FormLayout>
+        <Button size="sm" w="150px" h="34px" variant="solid" colorScheme="blue" onClick={handleAddOption}>Add new option</Button>
+      </VerticalStack>
     </LegacyCard>
   )
 }

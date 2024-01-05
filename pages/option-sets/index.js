@@ -67,6 +67,7 @@ export default function OptionSets() {
     if (data && data.statusCode === 200) {
       setOptionSets(data.payload.map(optionSet => { return {...optionSet, id: optionSet._id }}));
       setSearchOptionSets(data.payload.map(optionSet => { return {...optionSet, id: optionSet._id }}));
+      updateData([`${process.env.NEXT_PUBLIC_SERVER_URL}/theme`, jwt, { shopId: shopId }]);
     }
   }, [data]);
 

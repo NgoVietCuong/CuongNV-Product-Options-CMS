@@ -12,7 +12,6 @@ import {
   SkeletonBodyText,
   SkeletonDisplayText,
   SkeletonPage,
-  VerticalStack,
   TextContainer
 } from '@shopify/polaris';
 import { ChakraProvider } from "@chakra-ui/react";
@@ -74,6 +73,7 @@ export default function App({ Component, pageProps }) {
       'https://cdn.shopify.com/s/files/1/2376/3301/files/Shopify_Secondary_Inverted.png',
     accessibilityLabel: 'Shopify',
   };
+
   return (
     <ChakraProvider>
       <AppProvider i18n={en}>

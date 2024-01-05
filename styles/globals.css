@@ -74,6 +74,10 @@ h1, h2, h3, h4, h5, h6, p {
   background-color: rgba(102, 153, 225, 1)!important;
 }
 
+.Polaris-LegacyCard__Section .Polaris-VerticalStack > .Polaris-Layout:not(:first-child) .Polaris-Labelled__LabelWrapper {
+  display: none;
+}
+
 /* Resource List */
 .po_resource_empty_state .Polaris-Box {
   padding-bottom: 0px!important;
@@ -117,11 +121,19 @@ h1, h2, h3, h4, h5, h6, p {
 }
 
 /* Alert Banner */
-.Polaris-Banner.Polaris-Banner--statusCritical.Polaris-Banner--withinPage {
+.po_swatch_container .Polaris-Banner.Polaris-Banner--statusCritical.Polaris-Banner--withinPage {
   margin-bottom: 1rem!important;
+  padding: 0.5rem!important;
 }
 
 /* Selected Items Banner */
+.Polaris-Banner--withinContentContainer.Polaris-Banner--statusInfo {
+  background-color: #eaf4ff!important;
+  border: none!important;
+  color: #003a5a;
+  padding: 0.7rem!important;
+}
+
 .po_banner_with_image > .Polaris-Banner.Polaris-Banner--statusInfo,
 .po_banner_without_image > .Polaris-Banner.Polaris-Banner--statusInfo,
 .Polaris-Scrollable > .Polaris-Banner.Polaris-Banner--statusInfo {
@@ -139,7 +151,8 @@ h1, h2, h3, h4, h5, h6, p {
   margin-top: 0px!important;
 }
 
-.Polaris-Banner .Polaris-Icon.Polaris-Icon--colorHighlight.Polaris-Icon--applyColor {
+.po_banner_with_image > .Polaris-Banner .Polaris-Icon.Polaris-Icon--colorHighlight.Polaris-Icon--applyColor,
+.po_banner_without_image > .Polaris-Banner .Polaris-Icon.Polaris-Icon--colorHighlight.Polaris-Icon--applyColor {
   display: none!important;
 }
 
@@ -266,6 +279,7 @@ span.Polaris-Text--bodyMd {
 .po_swatch_container .Polaris-Modal-Section .Polaris-Box>.Polaris-VerticalStack {
   padding-left: 25px;
   /* padding-right: 20px; */
+  width: 50%;
   border-left: 1px solid rgba(225,227,229,1);
 }
 

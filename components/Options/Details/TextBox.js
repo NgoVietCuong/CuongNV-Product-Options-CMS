@@ -28,14 +28,8 @@ export default function TextBoxDetail({ option, index }) {
     <VerticalStack gap="3">
       <Layout>
         <Layout.Section oneThird>
-          <Text variant="headingSm" as="h6">Price Add-on</Text>
-        </Layout.Section>
-        <Layout.Section oneThird>
-        </Layout.Section>
-      </Layout>
-      <Layout>
-        <Layout.Section oneThird>
           <TextField 
+            label="Price Add-on"
             type="number"
             placeholder="0.00"
             autoComplete="off"

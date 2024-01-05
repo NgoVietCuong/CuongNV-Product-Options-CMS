@@ -8,7 +8,8 @@ import {
   TextField,
   Select,
   FormLayout,
-  ContextualSaveBar
+  ContextualSaveBar,
+  Text
 } from "@shopify/polaris";
 import { Spinner, useToast, useDisclosure } from "@chakra-ui/react";
 import { fetchData, createData, updateData } from "@/utils/axiosRequest";
@@ -229,7 +230,7 @@ export default function UpdateOptionSet() {
           titleMetadata={(id === "create") ? null : (status === "true" ? <Badge status="info">Active</Badge> : <Badge status="new">Inactive</Badge>) }
         >
           <DiscardChangesModal isOpen={isOpen} onClose={onClose} cancelRef={cancelRef} discardChange={handleDiscardChange} />
-          <LegacyCard title="General Information" sectioned>
+          <LegacyCard sectioned>
             {isDirty && <ContextualSaveBar
               message="Unsaved changes"
               saveAction={{
@@ -240,8 +241,9 @@ export default function UpdateOptionSet() {
               discardAction={{
                 onAction: onOpen,
               }}
-            />}
+            />}  
             <FormLayout>
+              <Text variant="headingSm" as="h6">General Information</Text>
               <TextField
                 label="Option set name"
                 value={name}
